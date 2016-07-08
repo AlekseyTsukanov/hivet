@@ -1,0 +1,79 @@
+<resources>
+    <attr name="toolbarTheme" format="reference" />
+
+    <!-- Base custom theme -->
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="toolbarStyle">@style/Widget.HiveTheme.Toolbar.Light</item>
+        <item name="toolbarTheme">@style/ThemeOverlay.HiveTheme.ActionBar.Light</item>
+    </style>
+
+    <style name="AppTheme" parent="AppTheme.Base"></style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!-- ============ -->
+    <!-- Parent Theme -->
+    <!-- ============ -->
+
+    <style name="HiveTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="spinnerStyle">@style/Widget.HiveTheme.Spinner.Light</item>
+        <item name="toolbarTheme">@style/ThemeOverlay.HiveTheme.ActionBar.Light</item>
+    </style>
+
+    <!-- ========== -->
+    <!-- Dark Theme -->
+    <!-- ========== -->
+
+    <style name="HiveTheme.Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimaryDark">@color/hivet_dark_blue</item>
+        <item name="android:windowBackground">@color/window_background_dark</item>
+        <!-- Button styles -->
+        <item name="borderlessButtonStyle">@style/Widget.HiveTheme.Button.Borderless.Dark</item>
+        <item name="buttonStyle">@style/Widget.HiveTheme.Button.Dark</item>
+    </style>
+
+    <style name="Widget.HiveTheme.Button.Dark" parent="Widget.AppCompat.Button"></style>
+
+    <style name="Widget.HiveTheme.Button.Borderless.Dark" parent="Widget.AppCompat.Button.Borderless"></style>
+
+    <style name="Widget.HiveTheme.Button.Auth.Dark" parent="Widget.HiveTheme.Button.Dark"></style>
+
+    <!-- =========== -->
+    <!-- Light Theme -->
+    <!-- =========== -->
+
+    <style name="HiveTheme.Light" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimaryDark">@color/hivet_dark_blue</item>
+        <item name="android:windowBackground">@color/window_background_light</item>
+        <item name="spinnerStyle">@style/Widget.HiveTheme.Spinner.Light</item>
+        <!-- Action Bar Styles -->
+        <item name="actionMenuTextColor">@color/action_menu_text_light</item>
+        <item name="actionBarSize">@dimen/toolbar_min_height</item>
+        <!-- Toolbar Styles -->
+        <item name="toolbarStyle">@style/Widget.HiveTheme.Toolbar.Light</item>
+        <item name="toolbarTheme">@style/ThemeOverlay.HiveTheme.ActionBar.Light</item>
+    </style>
+
+    <style name="Widget.HiveTheme.Toolbar.Light" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/toolbar_background_light</item>
+    </style>
+
+    <style name="ThemeOverlay.HiveTheme.ActionBar.Light" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorControlNormal">@color/toolbar_text_light</item>
+        <item name="android:textColorPrimary">@color/toolbar_text_light</item>
+    </style>
+
+    <style name="Widget.HiveTheme.Spinner.Light" parent="Widget.AppCompat.Spinner.Underlined"></style>
+
+    <style name="HiveTheme.Light.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="HiveTheme.Light.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+</resources>
