@@ -6,6 +6,7 @@ import android.content.Context;
 import com.acukanov.hivet.HivetApplication;
 import com.acukanov.hivet.injection.annotations.ApplicationContext;
 import com.acukanov.hivet.injection.modules.ApplicationModule;
+import com.acukanov.hivet.service.GpsStateReceiver;
 
 import javax.inject.Singleton;
 
@@ -15,6 +16,7 @@ import dagger.Component;
 @Component(modules = {ApplicationModule.class})
 public interface ApplicationComponent {
     void inject(HivetApplication hivetApplication);
+    void inject(GpsStateReceiver gpsStateReceiver);
 
     @ApplicationContext
     Context context();

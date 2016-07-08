@@ -28,4 +28,8 @@ public class HivetApplication extends Application {
     public ApplicationComponent getApplicationComponent() {
         return mApplicationComponent;
     }
+
+    public void setComponent(ApplicationComponent applicationComponent) {
+        mApplicationComponent = applicationComponent;
+    }
 }
