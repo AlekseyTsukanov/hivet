@@ -6,4 +6,9 @@
 
     <string name="res_menu_drawer_open">Open drawer</string>
     <string name="res_menu_drawer_close">Close drawer</string>
+
+    <string name="text_hint_user_name">User Name</string>
+    <string name="text_enable_gps">Please, enable GPS to start searching your location</string>
+
+    <string name="btn_login">Login</string>
 </resources>

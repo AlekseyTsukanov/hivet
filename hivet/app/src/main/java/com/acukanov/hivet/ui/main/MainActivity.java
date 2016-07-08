@@ -31,7 +31,6 @@ public class MainActivity extends BaseActivity implements IMainView {
     @InjectView(R.id.drawer) DrawerLayout mDrawerLayout;
     @Optional @InjectView(R.id.profile_image) CircleImageView profileImage;
     @Optional @InjectView(R.id.username) TextView userName;
-
     private View mHeaderView;
 
     @Override

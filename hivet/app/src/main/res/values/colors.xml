@@ -14,7 +14,7 @@
     <color name="hivet_dark_gray_home_button">#838383</color>
     <color name="hivet_gray_home_button_border">#D5D5D5</color>
     <color name="hivet_white">#FFFFFF</color>
-    <color name="hivet_dark_red">@color/colorAccent</color>
+    <color name="hivet_dark_red">#de0e0e</color>
 
     <!-- Light -->
     <color name="window_background_light">@color/hivet_white</color>
