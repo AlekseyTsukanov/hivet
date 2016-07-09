@@ -17,7 +17,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.acukanov.hivet.R;
+import com.acukanov.hivet.data.model.Users;
 import com.acukanov.hivet.events.GpsStateChanged;
+import com.acukanov.hivet.injection.annotations.ActivityContext;
 import com.acukanov.hivet.ui.base.BaseActivity;
 import com.acukanov.hivet.ui.main.MainActivity;
 import com.acukanov.hivet.utils.DialogFactory;
@@ -41,6 +43,7 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
     @InjectView(R.id.text_enable_gps) TextView mGpsAlertMessage;
     @InjectView(R.id.et_user_name) EditText mUserName;
     @InjectView(R.id.btn_login) Button mLoginButton;
+    private Users mUsers;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,6 +55,8 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
         ButterKnife.inject(this);
         mStartPresenter.attachView(this);
         EventBus.getDefault().register(this);
+
+        mUsers = new Users();
     }
 
     @Override
@@ -83,7 +88,10 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
                 if (!mUserName.getText().toString().equals("")) {
                     if (GpsUtils.isGpsEnabled(this)) {
                         if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                            openMainActivity(this);
+                            //openMainActivity(this);
+                            mUsers.userName = mUserName.getText().toString();
+                            mStartPresenter.createUser(mUsers);
+                            mStartPresenter.openMainActivity(this);
                         } else {
                             requestPermissionsSafely(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                     REQUEST_PERMISSION_FILE_LOCATION);
@@ -105,7 +113,10 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
         switch (requestCode) {
             case REQUEST_PERMISSION_FILE_LOCATION:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    openMainActivity(this);
+                    //openMainActivity(this);
+                    mUsers.userName = mUserName.getText().toString();
+                    mStartPresenter.createUser(mUsers);
+                    mStartPresenter.openMainActivity(this);
                 } else {
                     DialogFactory.createSimpleOkErrorDialog(this,
                             R.string.title_permission_file_location,
@@ -118,11 +129,21 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
     }
 
     private void openMainActivity(Context context) {
-        Location currentLocation = GpsUtils.getLastKnownLocation(this);
+
+    }
+
+    @Override
+    public void onOpenMainActivity(@ActivityContext Context context) {
+        Location currentLocation = GpsUtils.getLastKnownLocation(context);
         LogUtils.error(LOG_TAG, currentLocation.getLatitude() + " " + currentLocation.getLongitude());
 
         Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    @Override
+    public void onNewUserCreated() {
+
     }
 }
