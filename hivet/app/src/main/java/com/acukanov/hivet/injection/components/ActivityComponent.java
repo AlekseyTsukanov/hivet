@@ -1,5 +1,6 @@
 package com.acukanov.hivet.injection.components;
 
+import com.acukanov.hivet.ui.chat.ChatFragment;
 import com.acukanov.hivet.ui.main.MainActivity;
 import com.acukanov.hivet.injection.annotations.PerActivity;
 import com.acukanov.hivet.injection.modules.ActivityModule;
@@ -15,5 +16,5 @@ public interface ActivityComponent {
     void inject(StartActivity startActivity);
 
     // Inject Fragments
-    // ...
+    void inject(ChatFragment chatFragment);
 }

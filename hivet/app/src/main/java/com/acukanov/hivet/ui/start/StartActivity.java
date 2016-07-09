@@ -88,7 +88,6 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
                 if (!mUserName.getText().toString().equals("")) {
                     if (GpsUtils.isGpsEnabled(this)) {
                         if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                            //openMainActivity(this);
                             mUsers.userName = mUserName.getText().toString();
                             mStartPresenter.createUser(mUsers);
                             mStartPresenter.openMainActivity(this);
@@ -113,7 +112,6 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
         switch (requestCode) {
             case REQUEST_PERMISSION_FILE_LOCATION:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //openMainActivity(this);
                     mUsers.userName = mUserName.getText().toString();
                     mStartPresenter.createUser(mUsers);
                     mStartPresenter.openMainActivity(this);
@@ -126,10 +124,6 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-    }
-
-    private void openMainActivity(Context context) {
-
     }
 
     @Override

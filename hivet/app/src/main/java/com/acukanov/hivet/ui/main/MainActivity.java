@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.acukanov.hivet.R;
 import com.acukanov.hivet.ui.base.BaseActivity;
+import com.acukanov.hivet.ui.chat.ChatFragment;
 import com.acukanov.hivet.ui.common.ActivityCommon;
 import com.acukanov.hivet.utils.LogUtils;
 
@@ -47,7 +48,7 @@ public class MainActivity extends BaseActivity implements IMainView {
         mHeaderView = LayoutInflater.from(this).inflate(R.layout.partial_drawer_header, null);
         mNavigationView.addHeaderView(mHeaderView);
 
-        //getSupportFragmentManager().beginTransaction().replace(R.id.main_content, ...).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, ChatFragment.newInstance()).commit();
 
         mNavigationView.setNavigationItemSelectedListener((menuItem) -> {
             if (menuItem.isChecked()) {
@@ -59,7 +60,7 @@ public class MainActivity extends BaseActivity implements IMainView {
             Fragment fragment = null;
             switch (menuItem.getItemId()){
                 case R.id.menu_drawer_chat:
-                    //fragment =
+                    fragment = ChatFragment.newInstance();
                     mMainPresenter.navigationItemSelected(fragment);
                     break;
                 case R.id.menu_drawer_settings:

@@ -8,10 +8,13 @@
     <string name="res_menu_drawer_close">Close drawer</string>
 
     <string name="text_hint_user_name">User Name</string>
+    <string name="text_hint_enter_message">Enter your message here</string>
+
     <string name="text_enable_gps">Please, enable GPS to start searching your location</string>
     <string name="text_empty_user_name">Please, enter user name (not less than 4 characters)</string>
     <string name="text_permission_file_location_error">Sorry, you can\'t log in cause you forbid location requests</string>
     <string name="text_no_ethernet_connection">No ethernet connection</string>
+    <string name="text_empty_chat">There is no any messages yet.\n Write something to start chat with Bot.</string>
 
     <string name="btn_login">Login</string>
 
@@ -20,5 +23,7 @@
     <string name="dialog_error_title">Sorry</string>
 
     <string name="title_permission_file_location">Location permission</string>
+
+    <string name="content_desc_send">Send message button</string>
 
 </resources>
