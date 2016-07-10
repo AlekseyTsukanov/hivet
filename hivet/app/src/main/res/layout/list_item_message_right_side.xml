@@ -9,8 +9,8 @@
     android:paddingLeft="10dp">
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/layout_right_message_container"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
@@ -55,12 +55,10 @@
             android:layout_height="wrap_content"
             android:id="@+id/text_message_field"
             android:text="@string/text_lorem_ipsum"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/profile_image"
             android:padding="10dp"
             android:background="@drawable/shape_message_owner"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_toLeftOf="@+id/profile_image"
-            android:layout_toStartOf="@+id/profile_image" />
+            />
     </RelativeLayout>
 </RelativeLayout>
