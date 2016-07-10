@@ -16,6 +16,9 @@
     <color name="hivet_white">#FFFFFF</color>
     <color name="hivet_dark_red">#de0e0e</color>
 
+    <color name="hivet_pink">#FFF7BABC</color>
+    <color name="hivet_green">#81b68a</color>
+
     <!-- Light -->
     <color name="window_background_light">@color/hivet_white</color>
     <color name="toolbar_background_light">@color/hivet_dark_blue</color>

@@ -7,7 +7,7 @@
     <string name="res_menu_drawer_open">Open drawer</string>
     <string name="res_menu_drawer_close">Close drawer</string>
 
-    <string name="text_hint_user_name">User Name</string>
+    <string name="text_hint_user_name">@string/text_user_name</string>
     <string name="text_hint_enter_message">Enter your message here</string>
 
     <string name="text_enable_gps">Please, enable GPS to start searching your location</string>
@@ -15,6 +15,20 @@
     <string name="text_permission_file_location_error">Sorry, you can\'t log in cause you forbid location requests</string>
     <string name="text_no_ethernet_connection">No ethernet connection</string>
     <string name="text_empty_chat">There is no any messages yet.\n Write something to start chat with Bot.</string>
+    <string name="text_user_name">User Name</string>
+
+    <string name="text_lorem_ipsum">Lorem ipsum dolor sit amet,
+        consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+        labore et dolore magna aliqua.
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco
+        laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit
+        esse cillum dolore eu fugiat nulla pariatur.
+        Excepteur sint occaecat cupidatat non proident,
+        sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </string>
+
+    <string name="text_timestamp_sample">07.10.2016 18:09</string>
 
     <string name="btn_login">Login</string>
 
