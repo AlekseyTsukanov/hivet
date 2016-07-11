@@ -17,7 +17,7 @@
         android:layout_alignParentStart="true">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile_image"
+            android:id="@+id/image_user_avatar"
             android:layout_width="76dp"
             android:layout_height="76dp"
             android:src="@drawable/profile"
@@ -31,12 +31,12 @@
             android:id="@+id/text_user_name"
             android:text="@string/text_user_name"
             android:gravity="center"
-            android:layout_alignRight="@+id/profile_image"
-            android:layout_alignEnd="@+id/profile_image"
-            android:layout_below="@+id/profile_image"
+            android:layout_alignRight="@+id/image_user_avatar"
+            android:layout_alignEnd="@+id/image_user_avatar"
+            android:layout_below="@+id/image_user_avatar"
             android:layout_marginTop="5dp"
-            android:layout_alignLeft="@+id/profile_image"
-            android:layout_alignStart="@+id/profile_image" />
+            android:layout_alignLeft="@+id/image_user_avatar"
+            android:layout_alignStart="@+id/image_user_avatar" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -53,10 +53,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/text_message_field"
+            android:id="@+id/text_message"
             android:text="@string/text_lorem_ipsum"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/profile_image"
+            android:layout_toLeftOf="@+id/image_user_avatar"
             android:padding="10dp"
             android:background="@drawable/shape_message_owner"
             />

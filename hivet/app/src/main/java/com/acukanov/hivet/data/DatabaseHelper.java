@@ -9,6 +9,8 @@ import com.acukanov.hivet.utils.LogUtils;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -50,9 +52,108 @@ public class DatabaseHelper {
         return Observable.create(subscriber -> {
             String query = "SELECT * FROM " + DatabaseTables.TABLE_USERS;
             Cursor cursor = mDb.query(query);
+            cursor.moveToFirst();
             while (cursor.moveToNext()) {
                 LogUtils.error(LOG_TAG, DatabaseTables.UsersTable.parseCursor(cursor).toString());
+                subscriber.onNext(DatabaseTables.UsersTable.parseCursor(cursor));
             }
+            cursor.close();
+        });
+    }
+
+    public ArrayList<Users> findUsersData() {
+        ArrayList<Users> users = new ArrayList<>();
+        String query = "SELECT * FROM " + DatabaseTables.TABLE_USERS
+                + " INNER JOIN " + DatabaseTables.TABLE_MESSAGES
+                + " ON " + DatabaseTables.UsersTable.COLUMN_ID
+                +  " = " + DatabaseTables.MessagesTable.COLUMN_USER_ID;
+        Cursor cursor = mDb.query(query);
+        while (cursor.moveToNext()) {
+            users.add(DatabaseTables.UsersTable.parseCursor(cursor));
+        }
+        return users;
+    }
+
+    /*public Observable<ArrayList<Users>> findUsersDataTest() {
+        return Observable.create(subscriber -> {
+            ArrayList<Users> users = new ArrayList<Users>();
+            // String query = "SELECT * FROM users INNER JOIN messages ON users.id = messages.user_id;
+            String query = "SELECT * FROM " + DatabaseTables.TABLE_USERS
+                    + " INNER JOIN " + DatabaseTables.TABLE_MESSAGES
+                    + " ON " + DatabaseTables.UsersTable.COLUMN_ID
+                    +  " = " + DatabaseTables.MessagesTable.COLUMN_USER_ID;
+            Cursor cursor = mDb.query(query);
+            cursor.moveToFirst();
+            while (cursor.moveToNext()) {
+                LogUtils.error(LOG_TAG, DatabaseTables.UsersTable.parseCursor(cursor).toString());
+                users.add(DatabaseTables.UsersTable.parseCursor(cursor));
+                subscriber.onNext(users);
+            }
+            cursor.close();
+            subscriber.onCompleted();
+        });
+    }*/
+
+    public Observable<ArrayList<Messages>> findUserAndMessageData() {
+        return Observable.create(subscriber -> {
+            ArrayList<Messages> messages = new ArrayList<Messages>();
+            String query = "SELECT m.message, u.user_name"
+                    + " FROM messages m"
+                    + " INNER JOIN users u ON m.user_id = u." + DatabaseTables.UsersTable.COLUMN_ID;
+            /*String query = "SELECT messages.message, messages.date_time, users.user_name"
+                    + " FROM messages"
+                    + " INNER JOIN users ON messages.user_id = users._id";*/
+            /*String query = "SELECT messages.message, messages.date_time, users.user_name, users.user_avatar"
+                    + " FROM messages"
+                    + " INNER JOIN users ON users._id = messages.user_id";*/
+            /*String query = "SELECT " + DatabaseTables.MessagesTable.COLUMN_MESSAGE + ", " + DatabaseTables.MessagesTable.COLUMN_DATE
+                    + ", " + DatabaseTables.UsersTable.COLUMN_USER_NAME + ", " + DatabaseTables.UsersTable.COLUMN_USER_AVATAR
+                    + " FROM " + DatabaseTables.TABLE_MESSAGES
+                    + " INNER JOIN " + DatabaseTables.TABLE_USERS
+                    + " ON " + DatabaseTables.UsersTable.COLUMN_ID + " = " + DatabaseTables.MessagesTable.COLUMN_USER_ID;*/
+            Cursor cursor = mDb.query(query);
+            cursor.moveToFirst();
+            //LogUtils.error(LOG_TAG, DatabaseTables.MessagesTable.parseCursor(cursor).toString());
+            while (cursor.moveToNext()) {
+                //LogUtils.error(LOG_TAG, DatabaseTables.MessagesTable.parseCursor(cursor).toString());
+                // TODO: Returns only mesages obejct fields, need somehow to return also and users data!
+                messages.add(DatabaseTables.MessagesTable.parseCursor(cursor));
+                subscriber.onNext(messages);
+            }
+            cursor.close();
+            subscriber.onCompleted();
+        });
+    }
+
+    /*public Observable<Users> findUserData() {
+        return Observable.create(subscriber -> {
+            ArrayList<Users> users = new ArrayList<Users>();
+            // String query = "SELECT * FROM users INNER JOIN messages ON users.id = messages.user_id;
+            String query = "SELECT * FROM " + DatabaseTables.TABLE_USERS
+                    + " INNER JOIN " + DatabaseTables.TABLE_MESSAGES
+                    + " ON " + DatabaseTables.UsersTable.COLUMN_ID
+                    +  " = " + DatabaseTables.MessagesTable.COLUMN_USER_ID;
+            Cursor cursor = mDb.query(query);
+            while (cursor.moveToNext()) {
+                LogUtils.error(LOG_TAG, DatabaseTables.UsersTable.parseCursor(cursor).toString());
+                users.add(DatabaseTables.UsersTable.parseCursor(cursor));
+                subscriber.onNext(DatabaseTables.UsersTable.parseCursor(cursor));
+            }
+            cursor.close();
+            subscriber.onCompleted();
+        });
+    }*/
+
+    public Observable<Messages> findAllMessages() {
+        return Observable.create(subscriber -> {
+            String query = "SELECT * FROM " + DatabaseTables.TABLE_MESSAGES;
+            Cursor cursor = mDb.query(query);
+            while (cursor.moveToNext()) {
+                LogUtils.error(LOG_TAG, DatabaseTables.MessagesTable.parseCursor(cursor).toString());
+                subscriber.onNext(DatabaseTables.MessagesTable.parseCursor(cursor));
+            }
+            cursor.close();
+            subscriber.onCompleted();
         });
     }
 

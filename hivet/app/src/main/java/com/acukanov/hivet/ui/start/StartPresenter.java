@@ -67,4 +67,29 @@ public class StartPresenter implements IPresenter<IStartView> {
         mSubscription = mDatabaseHelper.findAllUsers()
                 .subscribe();
     }
+
+    /*public void createMessage(Users users, Messages messages) {
+        mSubscription = mDatabaseHelper.createMessage(users, messages)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<Void>() {
+                    @Override
+                    public void onCompleted() {
+                        LogUtils.debug(LOG_TAG, "Completed message creation");
+                        mStartView.onNewUserCreated();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtils.error(LOG_TAG, "Error " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(Void aVoid) {
+                        LogUtils.error(LOG_TAG, "OnNext");
+                    }
+                });
+        mSubscription = mDatabaseHelper.findAllMessages()
+                .subscribe();
+    }*/
 }

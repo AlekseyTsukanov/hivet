@@ -30,6 +30,11 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
             LogUtils.debug(LOG_TAG, DatabaseTables.MessagesTable.CREATE_TABLE);
             sqLiteDatabase.execSQL(DatabaseTables.UsersTable.CREATE_BOT_USER);
             LogUtils.debug(LOG_TAG, DatabaseTables.UsersTable.CREATE_BOT_USER);
+            // TODO: test data, remove
+            sqLiteDatabase.execSQL(DatabaseTables.MessagesTable.CREATE_FIRST_MESSAGE);
+            LogUtils.debug(LOG_TAG, DatabaseTables.MessagesTable.CREATE_FIRST_MESSAGE);
+            sqLiteDatabase.execSQL(DatabaseTables.MessagesTable.CREATE_SECOND_MESSAGE);
+            LogUtils.debug(LOG_TAG, DatabaseTables.MessagesTable.CREATE_SECOND_MESSAGE);
             sqLiteDatabase.setTransactionSuccessful();
         } finally {
             sqLiteDatabase.endTransaction();

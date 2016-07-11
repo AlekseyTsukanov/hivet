@@ -1,5 +1,6 @@
 package com.acukanov.hivet.ui.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -48,8 +49,14 @@ public class MainActivity extends BaseActivity implements IMainView {
         mHeaderView = LayoutInflater.from(this).inflate(R.layout.partial_drawer_header, null);
         mNavigationView.addHeaderView(mHeaderView);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, ChatFragment.newInstance()).commit();
+        Intent intent = getIntent();
+        int userId = 0;
+        if (intent != null) {
+            userId = intent.getIntExtra("user_id", 1);
+        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, ChatFragment.newInstance(userId)).commit();
 
+        int finalUserId = userId;
         mNavigationView.setNavigationItemSelectedListener((menuItem) -> {
             if (menuItem.isChecked()) {
                 menuItem.setChecked(false);
@@ -60,7 +67,7 @@ public class MainActivity extends BaseActivity implements IMainView {
             Fragment fragment = null;
             switch (menuItem.getItemId()){
                 case R.id.menu_drawer_chat:
-                    fragment = ChatFragment.newInstance();
+                    fragment = ChatFragment.newInstance(finalUserId);
                     mMainPresenter.navigationItemSelected(fragment);
                     break;
                 case R.id.menu_drawer_settings:

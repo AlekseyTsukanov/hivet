@@ -4,14 +4,15 @@ package com.acukanov.hivet.data.model;
 public class Messages {
     public int id;
     public String message;
-    public int dateTime;
+    //public int dateTime;
+    public String dateTime;
     public int userId;
 
     public Messages() {
 
     }
 
-    public Messages(int id, String message, int dateTime, int userId) {
+    public Messages(int id, String message, /*int*/String dateTime, int userId) {
         this.id = id;
         this.message = message;
         this.dateTime = dateTime;
@@ -35,13 +36,21 @@ public class Messages {
         this.message = message;
     }
 
-    public int getDateTime() {
+    public String getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    /*public int getDateTime() {
         return dateTime;
     }
 
     public void setDateTime(int dateTime) {
         this.dateTime = dateTime;
-    }
+    }*/
 
     public int getUserId() {
         return userId;
@@ -53,7 +62,7 @@ public class Messages {
     // endregion
 
 
-    @Override
+    /*@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -74,7 +83,8 @@ public class Messages {
         result = 31 * result + dateTime;
         result = 31 * result + userId;
         return result;
-    }
+    }*/
+
 
     @Override
     public String toString() {

@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.acukanov.hivet.R;
+import com.acukanov.hivet.data.model.Messages;
 import com.acukanov.hivet.data.model.Users;
 import com.acukanov.hivet.events.GpsStateChanged;
 import com.acukanov.hivet.injection.annotations.ActivityContext;
@@ -44,6 +45,7 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
     @InjectView(R.id.et_user_name) EditText mUserName;
     @InjectView(R.id.btn_login) Button mLoginButton;
     private Users mUsers;
+    private Messages mMessages;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,6 +59,7 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
         EventBus.getDefault().register(this);
 
         mUsers = new Users();
+        mMessages = new Messages();
     }
 
     @Override
@@ -89,7 +92,9 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
                     if (GpsUtils.isGpsEnabled(this)) {
                         if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
                             mUsers.userName = mUserName.getText().toString();
+                            //mMessages.message = "test message";
                             mStartPresenter.createUser(mUsers);
+                            //mStartPresenter.createMessage(mUsers, mMessages);
                             mStartPresenter.openMainActivity(this);
                         } else {
                             requestPermissionsSafely(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
@@ -113,7 +118,9 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
             case REQUEST_PERMISSION_FILE_LOCATION:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     mUsers.userName = mUserName.getText().toString();
+                    //mMessages.message = "test message";
                     mStartPresenter.createUser(mUsers);
+                    //mStartPresenter.createMessage(mUsers, mMessages);
                     mStartPresenter.openMainActivity(this);
                 } else {
                     DialogFactory.createSimpleOkErrorDialog(this,
@@ -132,6 +139,7 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
         LogUtils.error(LOG_TAG, currentLocation.getLatitude() + " " + currentLocation.getLongitude());
 
         Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("user_id", mUsers.id);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
