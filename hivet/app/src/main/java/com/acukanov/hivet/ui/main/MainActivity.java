@@ -1,5 +1,6 @@
 package com.acukanov.hivet.ui.main;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -26,6 +27,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends BaseActivity implements IMainView {
     private static final String LOG_TAG = LogUtils.makeLogTag(MainActivity.class);
+    private static final String EXTRA_USER_ID = "extra_user_id";
     @Inject MainPresenter mMainPresenter;
 
     @InjectView(R.id.toolbar) Toolbar mToolbar;
@@ -34,6 +36,12 @@ public class MainActivity extends BaseActivity implements IMainView {
     @Optional @InjectView(R.id.profile_image) CircleImageView profileImage;
     @Optional @InjectView(R.id.username) TextView userName;
     private View mHeaderView;
+
+    public static void startActivity(Activity activity, long userId) {
+        Intent intent = new Intent(activity, MainActivity.class);
+        intent.putExtra(EXTRA_USER_ID, userId);
+        activity.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,13 +58,13 @@ public class MainActivity extends BaseActivity implements IMainView {
         mNavigationView.addHeaderView(mHeaderView);
 
         Intent intent = getIntent();
-        int userId = 0;
+        long userId = 0;
         if (intent != null) {
-            userId = intent.getIntExtra("user_id", 1);
+            userId = intent.getLongExtra(EXTRA_USER_ID, 1);
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, ChatFragment.newInstance(userId)).commit();
 
-        int finalUserId = userId;
+        long finalUserId = userId;
         mNavigationView.setNavigationItemSelectedListener((menuItem) -> {
             if (menuItem.isChecked()) {
                 menuItem.setChecked(false);

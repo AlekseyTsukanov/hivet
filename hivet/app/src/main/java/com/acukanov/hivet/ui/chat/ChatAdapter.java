@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.acukanov.hivet.R;
+import com.acukanov.hivet.data.DatabaseHelper;
+import com.acukanov.hivet.data.DatabaseOpenHelper;
 import com.acukanov.hivet.data.model.Messages;
 import com.acukanov.hivet.data.model.Users;
 import com.acukanov.hivet.utils.LogUtils;
@@ -18,6 +20,8 @@ import java.util.ArrayList;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import rx.Subscriber;
+import rx.Subscription;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String LOG_TAG = LogUtils.makeLogTag(ChatAdapter.class);
@@ -26,21 +30,25 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Activity mActivity;
     private ArrayList<Messages> mMessages;
     private ArrayList<Users> mUsers;
-    private int mUserId;
+    private long mUserId;
+    DatabaseHelper databaseHelper;
+    private Subscription mSubscription;
+    Users user;
 
-    public ChatAdapter(Activity activity, int userId) {
+    public ChatAdapter(Activity activity, long userId) {
         mUserId = userId;
         mActivity = activity;
         mMessages = new ArrayList<>();
+        databaseHelper = new DatabaseHelper(new DatabaseOpenHelper(mActivity));
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_TYPE_LEFT_SIDE_MESSAGE:
-                return new LeftMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_message_left_side, parent, false));
+                return new LeftMessageHolder(LayoutInflater.from(mActivity).inflate(R.layout.list_item_message_left_side, parent, false));
             case VIEW_TYPE_RIGHT_SIDE_MESSAGE:
-                return new RightMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_message_right_side, parent, false));
+                return new RightMessageHolder(LayoutInflater.from(mActivity).inflate(R.layout.list_item_message_right_side, parent, false));
             default:
                 return null;
         }
@@ -48,14 +56,38 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Messages message = mMessages.get(position);
+        mSubscription = databaseHelper.findUserById(message.getUserId()).subscribe(new Subscriber<Users>() {
+            @Override
+            public void onCompleted() {
+                LogUtils.debug(LOG_TAG, "onCompleted left message loader");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                LogUtils.error(LOG_TAG, "Error on left message loader, position " + position + " " + e.getMessage());
+            }
+
+            @Override
+            public void onNext(Users users) {
+                user = users;
+                LogUtils.error(LOG_TAG, "onNext User: " + user.id + "\n" + user.userName);
+            }
+        });
         if (holder instanceof LeftMessageHolder) {
             LeftMessageHolder viewHolder = (LeftMessageHolder) holder;
-            //Messages message = mMessages.get(position);
-
-
+            if (user != null) {
+                viewHolder.userName.setText(user.userName);
+                viewHolder.message.setText(message.message);
+                viewHolder.dateTime.setText(message.dateTime);
+            }
         } else if (holder instanceof RightMessageHolder) {
             RightMessageHolder viewHolder = (RightMessageHolder) holder;
-
+            if (user != null) {
+                viewHolder.userName.setText(user.userName);
+                viewHolder.message.setText(message.message);
+                viewHolder.dateTime.setText(message.dateTime);
+            }
         }
     }
 

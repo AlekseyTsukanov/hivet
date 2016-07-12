@@ -3,7 +3,6 @@ package com.acukanov.hivet.ui.start;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -91,11 +90,8 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
                 if (!mUserName.getText().toString().equals("")) {
                     if (GpsUtils.isGpsEnabled(this)) {
                         if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                            mUsers.userName = mUserName.getText().toString();
-                            //mMessages.message = "test message";
+                            mUsers.setUserName(mUserName.getText().toString());
                             mStartPresenter.createUser(mUsers);
-                            //mStartPresenter.createMessage(mUsers, mMessages);
-                            mStartPresenter.openMainActivity(this);
                         } else {
                             requestPermissionsSafely(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                     REQUEST_PERMISSION_FILE_LOCATION);
@@ -117,11 +113,9 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
         switch (requestCode) {
             case REQUEST_PERMISSION_FILE_LOCATION:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mUsers.userName = mUserName.getText().toString();
-                    //mMessages.message = "test message";
+                    mUsers.setUserName(mUserName.getText().toString());
                     mStartPresenter.createUser(mUsers);
-                    //mStartPresenter.createMessage(mUsers, mMessages);
-                    mStartPresenter.openMainActivity(this);
+                    /*mStartPresenter.openMainActivity(this);*/
                 } else {
                     DialogFactory.createSimpleOkErrorDialog(this,
                             R.string.title_permission_file_location,
@@ -137,15 +131,11 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
     public void onOpenMainActivity(@ActivityContext Context context) {
         Location currentLocation = GpsUtils.getLastKnownLocation(context);
         LogUtils.error(LOG_TAG, currentLocation.getLatitude() + " " + currentLocation.getLongitude());
-
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra("user_id", mUsers.id);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        MainActivity.startActivity(this, mUsers.getId());
     }
 
     @Override
     public void onNewUserCreated() {
-
+        mStartPresenter.openMainActivity(this);
     }
 }

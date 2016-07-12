@@ -3,8 +3,11 @@ package com.acukanov.hivet.ui.chat;
 
 import com.acukanov.hivet.data.DatabaseHelper;
 import com.acukanov.hivet.data.model.Messages;
+import com.acukanov.hivet.events.ChatMessageSended;
 import com.acukanov.hivet.ui.base.IPresenter;
 import com.acukanov.hivet.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
@@ -39,38 +42,46 @@ public class ChatPresenter implements IPresenter<IChatView> {
         }
     }
 
-   /* public ArrayList<Users> getUsersData() {
-        return mDatabaseHelper.findUsersData();
+   /* public void load() {
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
+        }
+        mSubscription = getUsersAndMessagesData()
+                .subscribe(messages -> {
+
+                }, (gg) -> {
+
+                });
     }*/
 
     public void loadUsersAndMessagesData() {
         if (mSubscription != null) {
             mSubscription.unsubscribe();
         }
+        mChatView.showProgress(true);
         mSubscription = getUsersAndMessagesData()
                 .subscribe(new Subscriber<ArrayList<Messages>>() {
                     @Override
                     public void onCompleted() {
-                        LogUtils.debug(LOG_TAG, "onCompleted loading users data");
+                        LogUtils.debug(LOG_TAG, "onCompleted loading user data");
                         mChatView.showProgress(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         mChatView.showProgress(false);
-                        LogUtils.error(LOG_TAG, "Error on loading users data: " + e.getMessage());
+                        LogUtils.error(LOG_TAG, "Error on loading user data: " + e.getMessage());
                     }
 
                     @Override
                     public void onNext(ArrayList<Messages> messages) {
                         LogUtils.debug(LOG_TAG, "onNext start point");
                         if (!messages.isEmpty()) {
-                            LogUtils.debug(LOG_TAG, "onNext users data");
+                            LogUtils.debug(LOG_TAG, "onNext user data");
                             mChatView.showChatMessages(messages);
-                            // show data: mChatView.showChatMessages
                         } else {
-                            LogUtils.debug(LOG_TAG, "onNext empty users data");
-                            //show empty message - change textview visibility: mChatView.showEmptyMessage
+                            LogUtils.debug(LOG_TAG, "onNext empty user data");
+                            mChatView.showEmptyMessage();
                         }
                     }
                 });
@@ -85,7 +96,7 @@ public class ChatPresenter implements IPresenter<IChatView> {
                     @Override
                     public void onCompleted() {
                         // TODO: hide progress bar
-                        LogUtils.debug(LOG_TAG, "onCompleted loading users data");
+                        LogUtils.debug(LOG_TAG, "onCompleted loading user_id data");
                         mChatView.showProgress(false);
                     }
 
@@ -93,18 +104,18 @@ public class ChatPresenter implements IPresenter<IChatView> {
                     public void onError(Throwable e) {
                         // TODO: hide progress bar
                         mChatView.showProgress(false);
-                        LogUtils.error(LOG_TAG, "Error on loading users data: " + e.getMessage());
+                        LogUtils.error(LOG_TAG, "Error on loading user_id data: " + e.getMessage());
                     }
 
                     @Override
-                    public void onNext(ArrayList<Users> users) {
+                    public void onNext(ArrayList<Users> user_id) {
                         LogUtils.debug(LOG_TAG, "onNext start point");
-                        if (!users.isEmpty()) {
-                            LogUtils.debug(LOG_TAG, "onNext users data");
-                            mChatView.showChatUsers(users);
+                        if (!user_id.isEmpty()) {
+                            LogUtils.debug(LOG_TAG, "onNext user_id data");
+                            mChatView.showChatUsers(user_id);
                             // show data: mChatView.showChatMessages
                         } else {
-                            LogUtils.debug(LOG_TAG, "onNext empty users data");
+                            LogUtils.debug(LOG_TAG, "onNext empty user_id data");
                             //show empty message - change textview visibility: mChatView.showEmptyMessage
                         }
                     }
@@ -118,8 +129,34 @@ public class ChatPresenter implements IPresenter<IChatView> {
     }*/
 
     private Observable<ArrayList<Messages>> getUsersAndMessagesData() {
-        return mDatabaseHelper.findUserAndMessageData()
+        return mDatabaseHelper.findAllMessages()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
+    }
+
+    public void sendMessage(Messages message) {
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
+        }
+        mSubscription = mDatabaseHelper.createMessage(message)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<Messages>() {
+                    @Override
+                    public void onCompleted() {
+                        LogUtils.error(LOG_TAG, "onCompleted message sending");
+                        EventBus.getDefault().post(new ChatMessageSended());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtils.error(LOG_TAG, "onError sending: " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(Messages aMessage) {
+
+                    }
+                });
     }
 }

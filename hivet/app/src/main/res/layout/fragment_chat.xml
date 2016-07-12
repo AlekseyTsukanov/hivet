@@ -5,6 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/hivet_light_gray">
 
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress_chat"
+        android:layout_centerInParent="true"
+        />
+
     <RelativeLayout
         android:id="@+id/layout_control_container"
         android:layout_width="match_parent"

@@ -44,52 +44,30 @@ public class StartPresenter implements IPresenter<IStartView> {
     }
 
     public void createUser(Users users) {
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
+        }
         mSubscription = mDatabaseHelper.createUser(users)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<Void>() {
+                .subscribe(new Subscriber<Long>() {
                     @Override
                     public void onCompleted() {
+                        // Wouldn't call
                         LogUtils.debug(LOG_TAG, "Completed new user creation");
-                        mStartView.onNewUserCreated();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        LogUtils.error(LOG_TAG, "Error " + e.getMessage());
+                        LogUtils.error(LOG_TAG, "Error on new user creation " + e.getMessage());
                     }
 
                     @Override
-                    public void onNext(Void aVoid) {
+                    public void onNext(Long aVoid) {
                         LogUtils.error(LOG_TAG, "OnNext");
+                        users.id = aVoid;
+                        mStartView.onNewUserCreated();
                     }
                 });
-        mSubscription = mDatabaseHelper.findAllUsers()
-                .subscribe();
     }
-
-    /*public void createMessage(Users users, Messages messages) {
-        mSubscription = mDatabaseHelper.createMessage(users, messages)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<Void>() {
-                    @Override
-                    public void onCompleted() {
-                        LogUtils.debug(LOG_TAG, "Completed message creation");
-                        mStartView.onNewUserCreated();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        LogUtils.error(LOG_TAG, "Error " + e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(Void aVoid) {
-                        LogUtils.error(LOG_TAG, "OnNext");
-                    }
-                });
-        mSubscription = mDatabaseHelper.findAllMessages()
-                .subscribe();
-    }*/
 }

@@ -11,14 +11,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.acukanov.hivet.R;
 import com.acukanov.hivet.data.model.Messages;
 import com.acukanov.hivet.data.model.Users;
+import com.acukanov.hivet.events.ChatMessageSended;
 import com.acukanov.hivet.ui.base.BaseActivity;
 import com.acukanov.hivet.ui.base.BaseFragment;
+import com.acukanov.hivet.utils.DateUtils;
 import com.acukanov.hivet.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
@@ -26,27 +33,31 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 public class ChatFragment extends BaseFragment implements IChatView, View.OnClickListener {
     private static final String LOG_TAG = LogUtils.makeLogTag(ChatFragment.class);
+    private static final String EXTRA_BUNDLE_ARG_USER_ID = "extra_user_id";
     private Activity mActivity;
     @Inject ChatPresenter mChatPresenter;
-    /*@Inject*/ ChatAdapter mChatAdapter;
     @InjectView(R.id.list_chat) RecyclerView mChatList;
     @InjectView(R.id.text_empty_chat) TextView mEmptyChatMessage;
     @InjectView(R.id.text_message_field) EditText mMessageField;
     @InjectView(R.id.btn_send_message) ImageButton mSendMessageButton;
+    @InjectView(R.id.progress_chat) ProgressBar mProgressChat;
+    private ChatAdapter mChatAdapter;
+    private Messages mMessage = null;
+    private long mUserId = 0;
+    private ArrayList<Messages> mMessageList;
 
-    public ChatFragment() {}
+    public ChatFragment() {
+        // Need default empty constructor
+    }
 
-    /*public static ChatFragment newInstance() {
-        return new ChatFragment();
-    }*/
-
-    public static ChatFragment newInstance(int userId) {
+    public static ChatFragment newInstance(long userId) {
         ChatFragment instance = new ChatFragment();
         Bundle args = new Bundle();
-        args.putInt("user_id", userId);
+        args.putLong(EXTRA_BUNDLE_ARG_USER_ID, userId);
         instance.setArguments(args);
         return instance;
     }
@@ -62,14 +73,15 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         ((BaseActivity) mActivity).activityComponent().inject(this);
+        mMessageList = new ArrayList<>();
         Bundle args = getArguments();
-        int userId = 0;
         if (args != null) {
-            userId = args.getInt("user_id");
-            mChatAdapter = new ChatAdapter(mActivity, userId);
+            mUserId = args.getLong(EXTRA_BUNDLE_ARG_USER_ID);
+            mChatAdapter = new ChatAdapter(mActivity, mUserId);
         } else {
-            mChatAdapter = new ChatAdapter(mActivity, userId);
+            mChatAdapter = new ChatAdapter(mActivity, mUserId);
         }
+        mMessage = new Messages();
     }
 
     @Nullable
@@ -81,7 +93,7 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
         mChatList.setHasFixedSize(true);
         mChatList.setLayoutManager(new LinearLayoutManager(mActivity));
         mChatList.setAdapter(mChatAdapter);
-
+        mProgressChat.setVisibility(View.VISIBLE);
 
         return rootView;
     }
@@ -89,6 +101,9 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
     @Override
     public void onStart() {
         super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
         mChatPresenter.loadUsersAndMessagesData();
     }
 
@@ -100,19 +115,37 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
     @Override
     public void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         mChatPresenter.detachView();
     }
 
     @Override
+    @OnClick({R.id.btn_send_message})
     public void onClick(View view) {
         switch (view.getId()) {
-
+            case R.id.btn_send_message:
+                mMessage.message = mMessageField.getText().toString();
+                mMessage.dateTime = DateUtils.getDateTime();
+                mMessage.userId = mUserId;
+                mChatPresenter.sendMessage(mMessage);
+                break;
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(ChatMessageSended event) {
+        mChatPresenter.loadUsersAndMessagesData();
+    }
+
+    // MVP – View methods
+
     @Override
     public void showProgress(boolean show) {
-
+        if (show) {
+            mProgressChat.setVisibility(View.VISIBLE);
+        } else {
+            mProgressChat.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -127,9 +160,9 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
 
     @Override
     public void showChatMessages(ArrayList<Messages> messages) {
+        mMessageList = messages;
         mChatAdapter.setMessages(messages);
         mChatAdapter.notifyDataSetChanged();
         mEmptyChatMessage.setVisibility(View.GONE);
     }
-
 }

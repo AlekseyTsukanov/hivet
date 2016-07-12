@@ -2,17 +2,17 @@ package com.acukanov.hivet.data.model;
 
 
 public class Messages {
-    public int id;
+    public long id;
     public String message;
     //public int dateTime;
     public String dateTime;
-    public int userId;
+    public long userId;
 
     public Messages() {
 
     }
 
-    public Messages(int id, String message, /*int*/String dateTime, int userId) {
+    public Messages(int id, String message, /*int*/String dateTime, long userId) {
         this.id = id;
         this.message = message;
         this.dateTime = dateTime;
@@ -20,11 +20,11 @@ public class Messages {
     }
 
     // region getters and setters
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -52,13 +52,14 @@ public class Messages {
         this.dateTime = dateTime;
     }*/
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
+
     // endregion
 
 
@@ -85,14 +86,13 @@ public class Messages {
         return result;
     }*/
 
-
     @Override
     public String toString() {
         return "Messages{" +
                 "id=" + id +
                 ", message='" + message + '\'' +
-                ", dateTime=" + dateTime +
-                ", userId=" + userId +
+                ", dateTime='" + dateTime + '\'' +
+                ", user_id=" + userId +
                 '}';
     }
 }

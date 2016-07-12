@@ -2,7 +2,7 @@ package com.acukanov.hivet.data.model;
 
 
 public class Users {
-    public int id;
+    public long id;
     public String userName;
     public String userAvatar;
 
@@ -17,11 +17,11 @@ public class Users {
     }
 
     // region getters and setters
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -54,14 +54,6 @@ public class Users {
         if (!userName.equals(users.userName)) return false;
         return userAvatar != null ? userAvatar.equals(users.userAvatar) : users.userAvatar == null;
 
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + userName.hashCode();
-        result = 31 * result + (userAvatar != null ? userAvatar.hashCode() : 0);
-        return result;
     }
 
     @Override
