@@ -9,6 +9,7 @@ import android.content.Intent;
 
 import com.acukanov.hivet.R;
 import com.acukanov.hivet.ui.main.MainActivity;
+import com.acukanov.hivet.ui.start.StartActivity;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -32,9 +33,12 @@ public class NotificationsUtils {
     public static void createSimpleNotification(Context context, int notificationId, String userName, String messageText) {
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        Intent intent = new Intent(context, StartActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, 0);
         Notification notification = new Notification.Builder(context)
                 .setContentTitle("New message " + userName)
                 .setContentText(messageText)
+                .setContentIntent(pIntent)
                 .setSmallIcon(R.drawable.ic_send_black_24dp)
                 .setAutoCancel(true)
                 .build();
