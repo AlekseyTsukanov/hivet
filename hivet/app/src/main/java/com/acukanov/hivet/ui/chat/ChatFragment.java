@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.acukanov.hivet.R;
 import com.acukanov.hivet.data.database.model.Messages;
 import com.acukanov.hivet.events.ChatMessageSent;
+import com.acukanov.hivet.events.StopMessageService;
 import com.acukanov.hivet.service.BotMessageService;
 import com.acukanov.hivet.ui.base.BaseActivity;
 import com.acukanov.hivet.ui.base.BaseFragment;
@@ -43,9 +44,7 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
     private ArrayList<Messages> mMessageList;
     private Messages mMessage;
     private long mUserId;
-    private Intent mBotMessageService;
-    @Inject
-    ChatPresenter mPresenter;
+    @Inject ChatPresenter mPresenter;
     @InjectView(R.id.list_chat) RecyclerView mChatList;
     @InjectView(R.id.text_empty_chat) TextView mEmptyChatMessage;
     @InjectView(R.id.text_message_field) EditText mMessageField;
@@ -83,8 +82,11 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
             mUserId = args.getLong(EXTRA_USER_ID);
         }
         mMessage = new Messages();
-        mBotMessageService = BotMessageService.getStartIntent(mActivity);
-        mActivity.startService(mBotMessageService);
+        Intent botMessageService = BotMessageService.getStartIntent(mActivity);
+        if (BotMessageService.isServiceRunning(mActivity, BotMessageService.class)) {
+            mActivity.stopService(BotMessageService.getStartIntent(mActivity));
+        }
+        mActivity.startService(botMessageService);
         mAdapter = new ChatAdapter(mActivity, mUserId);
         mLayoutManager = new LinearLayoutManager(mActivity);
     }
@@ -118,9 +120,9 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
     @Override
     public void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().postSticky(new StopMessageService());
         EventBus.getDefault().unregister(this);
         mPresenter.detachView();
-        mActivity.stopService(mBotMessageService);
     }
 
     @Override

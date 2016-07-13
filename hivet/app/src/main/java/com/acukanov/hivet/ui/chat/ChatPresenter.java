@@ -53,7 +53,6 @@ public class ChatPresenter implements IPresenter<IChatView> {
                         LogUtils.error(LOG_TAG, "on Next messages are not empty");
                         msgList.add(messages);
                         mChatView.showProgress(true);
-                        //mChatView.onMessagesLoaded(msgList);
                     } else {
                         mChatView.showEmptyMessage();
                     }

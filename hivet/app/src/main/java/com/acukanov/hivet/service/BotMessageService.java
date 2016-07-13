@@ -13,12 +13,15 @@ import com.acukanov.hivet.HivetApplication;
 import com.acukanov.hivet.data.database.DatabaseHelper;
 import com.acukanov.hivet.data.database.model.Messages;
 import com.acukanov.hivet.events.ChatMessageSent;
+import com.acukanov.hivet.events.StopMessageService;
 import com.acukanov.hivet.utils.DateUtils;
 import com.acukanov.hivet.utils.LogUtils;
 import com.acukanov.hivet.utils.NotificationsUtils;
 import com.acukanov.hivet.utils.StringUtils;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -54,6 +57,7 @@ public class BotMessageService extends Service {
     @Override
     public void onCreate() {
         HivetApplication.get(this).getApplicationComponent().inject(this);
+        EventBus.getDefault().register(this);
         if (mTimer != null) {
             mTimer.cancel();
         } else {
@@ -62,8 +66,18 @@ public class BotMessageService extends Service {
         mTimer.scheduleAtFixedRate(new MessageTimerTask(), 0, INTERVAL_MESSAGE_SENDING);
     }
 
+    @Subscribe(threadMode = ThreadMode.BACKGROUND, sticky = true)
+    public void onEvent(StopMessageService event) {
+        mHandler.removeCallbacks(mRunnable);
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
+        }
+        stopSelf();
+    }
+
     @Override
     public void onDestroy() {
+        EventBus.getDefault().unregister(this);
         mHandler.removeCallbacks(mRunnable);
         if (mSubscription != null) {
             mSubscription.unsubscribe();

@@ -63,7 +63,6 @@ public class MainActivity extends BaseActivity implements IMainView {
         if (intent != null) {
             userId = intent.getLongExtra(EXTRA_USER_ID, 1);
         }
-        //getSupportFragmentManager().beginTransaction().replace(R.id.main_content, ChatFragment.newInstance(userId)).commit();
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, ChatFragment.newInstance(userId)).commit();
 
         long finalUserId = userId;
@@ -77,7 +76,6 @@ public class MainActivity extends BaseActivity implements IMainView {
             Fragment fragment = null;
             switch (menuItem.getItemId()){
                 case R.id.menu_drawer_chat:
-                    //fragment = ChatFragment.newInstance(finalUserId);
                     fragment = ChatFragment.newInstance(finalUserId);
                     mMainPresenter.navigationItemSelected(fragment);
                     break;
