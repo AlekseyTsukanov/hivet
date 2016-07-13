@@ -52,6 +52,8 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
     @InjectView(R.id.btn_send_message) ImageButton mSendMessageButton;
     @InjectView(R.id.progress_chat) ProgressBar mProgressChat;
     private ChatAdapter mAdapter;
+    private LinearLayoutManager mLayoutManager;
+    private boolean mNeedScroll;
 
     public ChatFragment() {
 
@@ -84,6 +86,7 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
         mBotMessageService = BotMessageService.getStartIntent(mActivity);
         mActivity.startService(mBotMessageService);
         mAdapter = new ChatAdapter(mActivity, mUserId);
+        mLayoutManager = new LinearLayoutManager(mActivity);
     }
 
     @Nullable
@@ -94,7 +97,7 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
         mPresenter.attachView(this);
 
         mChatList.setHasFixedSize(true);
-        mChatList.setLayoutManager(new LinearLayoutManager(mActivity));
+        mChatList.setLayoutManager(mLayoutManager);
         mChatList.setAdapter(mAdapter);
         mPresenter.loadMessages();
 
@@ -153,10 +156,18 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
 
     @Override
     public void onMessageAdded(Messages message) {
+        int position = mLayoutManager.findLastVisibleItemPosition();
+        if (position == (mMessageList.size() - 1)) {
+            mNeedScroll = true;
+        } else {
+            mNeedScroll = false;
+        }
         mMessageList.add(message);
         mAdapter.setMessages(mMessageList);
         mAdapter.notifyDataSetChanged();
-        mChatList.smoothScrollToPosition(mMessageList.size());
+        if (mNeedScroll) {
+            mChatList.smoothScrollToPosition(mMessageList.size());
+        }
     }
 
     @Override
