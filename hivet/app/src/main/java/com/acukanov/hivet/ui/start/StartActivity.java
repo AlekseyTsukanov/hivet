@@ -2,7 +2,9 @@ package com.acukanov.hivet.ui.start;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -48,6 +50,11 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
     @InjectView(R.id.btn_login) Button mLoginButton;
     private Users mUsers;
     private Messages mMessages;
+
+    public static void startActivity(Activity activity) {
+        Intent intent = new Intent(activity, StartActivity.class);
+        activity.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

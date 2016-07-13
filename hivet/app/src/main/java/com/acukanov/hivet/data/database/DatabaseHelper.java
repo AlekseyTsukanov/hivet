@@ -52,7 +52,6 @@ public class DatabaseHelper {
         return Observable.create(subscriber -> {
             String query = "SELECT * FROM " + DatabaseTables.TABLE_USERS;
             Cursor cursor = mDb.query(query);
-            cursor.moveToFirst();
             while (cursor.moveToNext()) {
                 LogUtils.error(LOG_TAG, DatabaseTables.UsersTable.parseCursor(cursor).toString());
                 subscriber.onNext(DatabaseTables.UsersTable.parseCursor(cursor));
@@ -83,7 +82,6 @@ public class DatabaseHelper {
                     + " ON " + DatabaseTables.UsersTable.COLUMN_ID
                     +  " = " + DatabaseTables.MessagesTable.COLUMN_USER_ID;
             Cursor cursor = mDb.query(query);
-            cursor.moveToFirst();
             while (cursor.moveToNext()) {
                 LogUtils.error(LOG_TAG, DatabaseTables.UsersTable.parseCursor(cursor).toString());
                 user_id.add(DatabaseTables.UsersTable.parseCursor(cursor));
@@ -102,7 +100,6 @@ public class DatabaseHelper {
                     + " LEFT OUTER JOIN users u ON m.user_id = u." + DatabaseTables.UsersTable.COLUMN_ID;*/
             String query = "SELECT * FROM " + DatabaseTables.TABLE_MESSAGES;
             Cursor cursor = mDb.query(query);
-            cursor.moveToFirst();
             while (cursor.moveToNext()) {
                 messages.add(DatabaseTables.MessagesTable.parseCursor(cursor));
                 subscriber.onNext(messages);
@@ -133,6 +130,21 @@ public class DatabaseHelper {
                 LogUtils.error(LOG_TAG, DatabaseTables.MessagesTable.parseCursor(cursor).toString());
                 messages.add(DatabaseTables.MessagesTable.parseCursor(cursor));
                 subscriber.onNext(messages);
+            }
+            cursor.close();
+            subscriber.onCompleted();
+        });
+    }
+
+    public Observable<Messages> getMessages() {
+        return Observable.create(subscriber -> {
+            Messages msg = new Messages();
+            String query =  "SELECT * FROM " + DatabaseTables.TABLE_MESSAGES;
+            Cursor cursor = mDb.query(query);
+            while (cursor.moveToNext()) {
+                LogUtils.error(LOG_TAG, DatabaseTables.MessagesTable.parseCursor(cursor).toString());
+                msg = (DatabaseTables.MessagesTable.parseCursor(cursor));
+                subscriber.onNext(msg);
             }
             cursor.close();
             subscriber.onCompleted();
@@ -207,6 +219,37 @@ public class DatabaseHelper {
             } finally {
                 transaction.end();
             }
+        });
+    }
+
+    public Observable<Long> createNewMessage(Messages message) {
+        return Observable.create(subscriber -> {
+            BriteDatabase.Transaction transaction = mDb.newTransaction();
+            try {
+                long id = mDb.insert(DatabaseTables.TABLE_MESSAGES, DatabaseTables.MessagesTable.createMessage(message));
+                transaction.markSuccessful();
+                subscriber.onNext(id);
+                //subscriber.onCompleted();
+                LogUtils.debug(LOG_TAG, "Creates message = "
+                        + "\nMessageId " + message.id + "\nText message " + message.message
+                        + "\nDate sent" + message.dateTime + "\nMessage userId " + message.userId);
+            } finally {
+                transaction.end();
+            }
+        });
+    }
+
+    public Observable<Messages> findMessageById(long messageId) {
+        return Observable.create(subscriber -> {
+            Messages msg = new Messages();
+            String query = "SELECT * FROM messages WHERE messages._id = " + messageId;
+            Cursor cursor = mDb.query(query);
+            while (cursor.moveToNext()) {
+                msg = DatabaseTables.MessagesTable.parseCursor(cursor);
+                subscriber.onNext(DatabaseTables.MessagesTable.parseCursor(cursor));
+            }
+            cursor.close();
+            subscriber.onCompleted();
         });
     }
 

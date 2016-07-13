@@ -1,6 +1,7 @@
 package com.acukanov.hivet.service;
 
 
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +12,7 @@ import android.support.annotation.Nullable;
 import com.acukanov.hivet.HivetApplication;
 import com.acukanov.hivet.data.database.DatabaseHelper;
 import com.acukanov.hivet.data.database.model.Messages;
-import com.acukanov.hivet.events.ChatMessageSended;
+import com.acukanov.hivet.events.ChatMessageSent;
 import com.acukanov.hivet.utils.DateUtils;
 import com.acukanov.hivet.utils.LogUtils;
 import com.acukanov.hivet.utils.NotificationsUtils;
@@ -23,10 +24,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 
+@Singleton
 public class BotMessageService extends Service {
     private static final String LOG_TAG = LogUtils.makeLogTag(BotMessageService.class);
     private static final long INTERVAL_MESSAGE_SENDING = 10 * 1000; // 10 sec
@@ -81,22 +84,34 @@ public class BotMessageService extends Service {
                 mMessages.dateTime = DateUtils.getDateTime();
                 mMessages.userId = 1;
                 String textMessage = mMessages.message;
-                mSubscription = mDatabaseHelper.createMessage(mMessages)
+                mSubscription = mDatabaseHelper.createNewMessage(mMessages)
                         .subscribeOn(Schedulers.io())
-                        .subscribe(messages -> {
+                        .subscribe(id -> {
                             LogUtils.error(LOG_TAG, "onNex in service message creation");
-                        }, (e) -> {
-                            LogUtils.error(LOG_TAG, "onError on service message creation: " + e.getMessage());
-                        }, () -> {
-                            LogUtils.error(LOG_TAG, "onComplete on service message creation");
-                            EventBus.getDefault().post(new ChatMessageSended());
+                            EventBus.getDefault().post(new ChatMessageSent(id));
+
                             NotificationsUtils.createSimpleNotification(
                                     getApplicationContext(),
                                     MESSAGE_SERVICE_ID,
                                     "Bot",
                                     textMessage);
+                        }, (e) -> {
+                            LogUtils.error(LOG_TAG, "onError on service message creation: " + e.getMessage());
+                        }, () -> {
+                            LogUtils.error(LOG_TAG, "onComplete on service message creation");
                         });
             });
         }
+    }
+
+    public static boolean isServiceRunning(Context context, Class aClass) {
+        ActivityManager activityManager =
+                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+            if (aClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

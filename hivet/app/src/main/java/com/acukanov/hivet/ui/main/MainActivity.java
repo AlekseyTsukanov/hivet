@@ -13,9 +13,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.acukanov.hivet.R;
+import com.acukanov.hivet.data.preference.UserPreferenceManager;
 import com.acukanov.hivet.ui.base.BaseActivity;
 import com.acukanov.hivet.ui.chat.ChatFragment;
 import com.acukanov.hivet.ui.common.ActivityCommon;
+import com.acukanov.hivet.ui.start.StartActivity;
 import com.acukanov.hivet.utils.LogUtils;
 
 import javax.inject.Inject;
@@ -29,7 +31,6 @@ public class MainActivity extends BaseActivity implements IMainView {
     private static final String LOG_TAG = LogUtils.makeLogTag(MainActivity.class);
     private static final String EXTRA_USER_ID = "extra_user_id";
     @Inject MainPresenter mMainPresenter;
-
     @InjectView(R.id.toolbar) Toolbar mToolbar;
     @InjectView(R.id.navigation_view) NavigationView mNavigationView;
     @InjectView(R.id.drawer) DrawerLayout mDrawerLayout;
@@ -62,6 +63,7 @@ public class MainActivity extends BaseActivity implements IMainView {
         if (intent != null) {
             userId = intent.getLongExtra(EXTRA_USER_ID, 1);
         }
+        //getSupportFragmentManager().beginTransaction().replace(R.id.main_content, ChatFragment.newInstance(userId)).commit();
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, ChatFragment.newInstance(userId)).commit();
 
         long finalUserId = userId;
@@ -75,12 +77,15 @@ public class MainActivity extends BaseActivity implements IMainView {
             Fragment fragment = null;
             switch (menuItem.getItemId()){
                 case R.id.menu_drawer_chat:
+                    //fragment = ChatFragment.newInstance(finalUserId);
                     fragment = ChatFragment.newInstance(finalUserId);
                     mMainPresenter.navigationItemSelected(fragment);
                     break;
                 case R.id.menu_drawer_settings:
-                    //fragment =
                     mMainPresenter.navigationItemSelected(fragment);
+                    break;
+                case R.id.menu_drawer_logout:
+                    mMainPresenter.logOut();
                     break;
             }
             return true;
@@ -120,5 +125,12 @@ public class MainActivity extends BaseActivity implements IMainView {
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment).commit();
         }
+    }
+
+    @Override
+    public void onLogOut() {
+        UserPreferenceManager preferenceManager = new UserPreferenceManager(this);
+        preferenceManager.clearUserData();
+        StartActivity.startActivity(this);
     }
 }

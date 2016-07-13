@@ -14,5 +14,17 @@
             android:icon="@drawable/ic_settings_applications_black_24dp"
             android:title="@string/menu_drawer_settings"
             />
+        <item
+            android:id="@+id/menu_drawer_divider"
+            android:title="@string/menu_drawer_divider">
+            <menu>
+                <item
+                    android:id="@+id/menu_drawer_logout"
+                    android:checked="false"
+                    android:icon="@drawable/ic_logout_black_24dp"
+                    android:title="@string/menu_drawer_logout"/>
+            </menu>
+
+        </item>
     </group>
 </menu>

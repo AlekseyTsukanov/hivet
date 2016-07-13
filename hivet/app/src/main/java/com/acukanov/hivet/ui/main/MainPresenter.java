@@ -29,4 +29,8 @@ public class MainPresenter implements IPresenter<IMainView> {
     public void navigationItemSelected(Fragment fragment) {
         mMainView.onNavigationItemSelected(fragment);
     }
+
+    public void logOut() {
+        mMainView.onLogOut();
+    }
 }
