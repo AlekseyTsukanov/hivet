@@ -3,8 +3,8 @@ package com.acukanov.hivet.ui.start;
 
 import android.content.Context;
 
-import com.acukanov.hivet.data.DatabaseHelper;
-import com.acukanov.hivet.data.model.Users;
+import com.acukanov.hivet.data.database.DatabaseHelper;
+import com.acukanov.hivet.data.database.model.Users;
 import com.acukanov.hivet.injection.annotations.ActivityContext;
 import com.acukanov.hivet.ui.base.IPresenter;
 import com.acukanov.hivet.utils.LogUtils;

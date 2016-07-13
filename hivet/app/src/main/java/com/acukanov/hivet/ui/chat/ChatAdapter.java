@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.acukanov.hivet.R;
-import com.acukanov.hivet.data.DatabaseHelper;
-import com.acukanov.hivet.data.DatabaseOpenHelper;
-import com.acukanov.hivet.data.model.Messages;
-import com.acukanov.hivet.data.model.Users;
+import com.acukanov.hivet.data.database.DatabaseHelper;
+import com.acukanov.hivet.data.database.DatabaseOpenHelper;
+import com.acukanov.hivet.data.database.model.Messages;
+import com.acukanov.hivet.data.database.model.Users;
 import com.acukanov.hivet.utils.LogUtils;
 
 import java.util.ArrayList;

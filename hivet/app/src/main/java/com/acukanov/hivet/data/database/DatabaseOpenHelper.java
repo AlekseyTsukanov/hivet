@@ -1,4 +1,4 @@
-package com.acukanov.hivet.data;
+package com.acukanov.hivet.data.database;
 
 
 import android.content.Context;

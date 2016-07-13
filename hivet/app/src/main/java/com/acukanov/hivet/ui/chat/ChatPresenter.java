@@ -1,8 +1,8 @@
 package com.acukanov.hivet.ui.chat;
 
 
-import com.acukanov.hivet.data.DatabaseHelper;
-import com.acukanov.hivet.data.model.Messages;
+import com.acukanov.hivet.data.database.DatabaseHelper;
+import com.acukanov.hivet.data.database.model.Messages;
 import com.acukanov.hivet.events.ChatMessageSended;
 import com.acukanov.hivet.ui.base.IPresenter;
 import com.acukanov.hivet.utils.LogUtils;
@@ -41,18 +41,6 @@ public class ChatPresenter implements IPresenter<IChatView> {
             mSubscription.unsubscribe();
         }
     }
-
-   /* public void load() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
-        mSubscription = getUsersAndMessagesData()
-                .subscribe(messages -> {
-
-                }, (gg) -> {
-
-                });
-    }*/
 
     public void loadUsersAndMessagesData() {
         if (mSubscription != null) {

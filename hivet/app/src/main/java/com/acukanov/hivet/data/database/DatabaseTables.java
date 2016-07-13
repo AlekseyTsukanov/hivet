@@ -1,11 +1,11 @@
-package com.acukanov.hivet.data;
+package com.acukanov.hivet.data.database;
 
 
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.acukanov.hivet.data.model.Messages;
-import com.acukanov.hivet.data.model.Users;
+import com.acukanov.hivet.data.database.model.Messages;
+import com.acukanov.hivet.data.database.model.Users;
 import com.acukanov.hivet.utils.DateUtils;
 
 public class DatabaseTables {

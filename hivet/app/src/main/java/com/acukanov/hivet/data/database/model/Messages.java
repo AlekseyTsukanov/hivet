@@ -1,4 +1,4 @@
-package com.acukanov.hivet.data.model;
+package com.acukanov.hivet.data.database.model;
 
 
 public class Messages {

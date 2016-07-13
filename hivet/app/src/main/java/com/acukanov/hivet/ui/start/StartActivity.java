@@ -14,10 +14,12 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.acukanov.hivet.R;
-import com.acukanov.hivet.data.model.Messages;
-import com.acukanov.hivet.data.model.Users;
+import com.acukanov.hivet.data.database.model.Messages;
+import com.acukanov.hivet.data.database.model.Users;
+import com.acukanov.hivet.data.preference.UserPreferenceManager;
 import com.acukanov.hivet.events.GpsStateChanged;
 import com.acukanov.hivet.injection.annotations.ActivityContext;
 import com.acukanov.hivet.ui.base.BaseActivity;
@@ -40,6 +42,7 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
     private static final String LOG_TAG = LogUtils.makeLogTag(StartActivity.class);
     private static final int REQUEST_PERMISSION_FILE_LOCATION = 0;
     @Inject StartPresenter mStartPresenter;
+    @Inject UserPreferenceManager mPreferenceManager;
     @InjectView(R.id.text_enable_gps) TextView mGpsAlertMessage;
     @InjectView(R.id.et_user_name) EditText mUserName;
     @InjectView(R.id.btn_login) Button mLoginButton;
@@ -59,6 +62,10 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
 
         mUsers = new Users();
         mMessages = new Messages();
+        if (mPreferenceManager.getLoggedInUserId() != 0) {
+            Toast.makeText(this, mPreferenceManager.getLoggedInUserId() + "", Toast.LENGTH_SHORT).show();
+            MainActivity.startActivity(this, mPreferenceManager.getLoggedInUserId());
+        }
     }
 
     @Override
@@ -131,6 +138,7 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
     public void onOpenMainActivity(@ActivityContext Context context) {
         Location currentLocation = GpsUtils.getLastKnownLocation(context);
         LogUtils.error(LOG_TAG, currentLocation.getLatitude() + " " + currentLocation.getLongitude());
+        mPreferenceManager.saveLoggedInUserId(mUsers.getId());
         MainActivity.startActivity(this, mUsers.getId());
     }
 

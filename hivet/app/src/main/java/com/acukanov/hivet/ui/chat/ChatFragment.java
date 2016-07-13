@@ -2,6 +2,7 @@ package com.acukanov.hivet.ui.chat;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,9 +16,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.acukanov.hivet.R;
-import com.acukanov.hivet.data.model.Messages;
-import com.acukanov.hivet.data.model.Users;
+import com.acukanov.hivet.data.database.model.Messages;
+import com.acukanov.hivet.data.database.model.Users;
 import com.acukanov.hivet.events.ChatMessageSended;
+import com.acukanov.hivet.service.BotMessageService;
 import com.acukanov.hivet.ui.base.BaseActivity;
 import com.acukanov.hivet.ui.base.BaseFragment;
 import com.acukanov.hivet.utils.DateUtils;
@@ -48,6 +50,7 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
     private ChatAdapter mChatAdapter;
     private Messages mMessage = null;
     private long mUserId = 0;
+    private Intent mMessageServiceIntent;
     private ArrayList<Messages> mMessageList;
 
     public ChatFragment() {
@@ -82,6 +85,8 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
             mChatAdapter = new ChatAdapter(mActivity, mUserId);
         }
         mMessage = new Messages();
+        mMessageServiceIntent =  BotMessageService.getStartIntent(mActivity);
+        mActivity.startService(mMessageServiceIntent);
     }
 
     @Nullable
@@ -105,6 +110,8 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
             EventBus.getDefault().register(this);
         }
         mChatPresenter.loadUsersAndMessagesData();
+        //mActivity.startService(new Intent(mActivity, BotMessageService.class));
+       /* mActivity.startService(BotMessageService.getStartIntent(mActivity));*/
     }
 
     @Override
@@ -117,6 +124,7 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         mChatPresenter.detachView();
+        mActivity.stopService(mMessageServiceIntent);
     }
 
     @Override
