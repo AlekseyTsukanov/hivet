@@ -39,6 +39,7 @@ import butterknife.OnClick;
 public class ChatFragment extends BaseFragment implements IChatView, View.OnClickListener {
     private static final String LOG_TAG = LogUtils.makeLogTag(ChatFragment.class);
     private static final String EXTRA_USER_ID = "extra_user_id";
+    private static final String EXTRA_USER_LOCATION = "extra_user_location";
     private Activity mActivity;
     private ArrayList<Messages> mMessageList;
     private Messages mMessage;
@@ -52,15 +53,17 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
     private ChatAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
     private boolean mNeedScroll;
+    private String mUserLocation;
 
     public ChatFragment() {
 
     }
 
-    public static ChatFragment newInstance(long userId) {
+    public static ChatFragment newInstance(long userId, String userLocation) {
         ChatFragment instance = new ChatFragment();
         Bundle args = new Bundle();
         args.putLong(EXTRA_USER_ID, userId);
+        args.putString(EXTRA_USER_LOCATION, userLocation);
         instance.setArguments(args);
         return instance;
     }
@@ -79,6 +82,7 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
         Bundle args = getArguments();
         if (args != null) {
             mUserId = args.getLong(EXTRA_USER_ID);
+            mUserLocation = args.getString(EXTRA_USER_LOCATION);
         }
         mMessage = new Messages();
         mAdapter = new ChatAdapter(mActivity, mUserId);
@@ -95,6 +99,13 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
         mChatList.setHasFixedSize(true);
         mChatList.setLayoutManager(mLayoutManager);
         mChatList.setAdapter(mAdapter);
+
+        mMessage.message = mUserLocation;
+        mMessage.dateTime = DateUtils.getDateTime();
+        mMessage.userId = mUserId;
+        mMessageField.setText("");
+        mChatPresenter.createMessage(mMessage);
+
         mChatPresenter.loadMessages();
 
         return rootView;

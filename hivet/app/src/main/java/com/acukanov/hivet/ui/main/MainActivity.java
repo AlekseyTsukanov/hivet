@@ -38,6 +38,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MainActivity extends BaseActivity implements IMainView, View.OnClickListener {
     private static final String LOG_TAG = LogUtils.makeLogTag(MainActivity.class);
     private static final String EXTRA_USER_ID = "extra_user_id";
+    private static final String EXTRA_USER_LOCATION = "extra_user_location";
     private static final int REQUEST_TAKE_PHOTO = 0;
     @Inject MainPresenter mMainPresenter;
     @InjectView(R.id.toolbar) Toolbar mToolbar;
@@ -48,11 +49,13 @@ public class MainActivity extends BaseActivity implements IMainView, View.OnClic
     private ImageButton mTakeAvatarButton;
     private View mHeaderView;
     private long mUserId;
+    private String mUserLocation;
     private String mTakenPhotoPath = null;
 
-    public static void startActivity(Activity activity, long userId) {
+    public static void startActivity(Activity activity, long userId, String location) {
         Intent intent = new Intent(activity, MainActivity.class);
         intent.putExtra(EXTRA_USER_ID, userId);
+        intent.putExtra(EXTRA_USER_LOCATION, location);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         activity.startActivity(intent);
     }
@@ -78,9 +81,10 @@ public class MainActivity extends BaseActivity implements IMainView, View.OnClic
         Intent intent = getIntent();
         if (intent != null) {
             mUserId = intent.getLongExtra(EXTRA_USER_ID, 1);
+            mUserLocation = intent.getStringExtra(EXTRA_USER_LOCATION);
         }
         mMainPresenter.setUpUserData(mUserId);
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, ChatFragment.newInstance(mUserId)).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, ChatFragment.newInstance(mUserId, mUserLocation)).commit();
 
         mNavigationView.setNavigationItemSelectedListener((menuItem) -> {
             if (menuItem.isChecked()) {
@@ -92,7 +96,7 @@ public class MainActivity extends BaseActivity implements IMainView, View.OnClic
             Fragment fragment = null;
             switch (menuItem.getItemId()){
                 case R.id.menu_drawer_chat:
-                    fragment = ChatFragment.newInstance(mUserId);
+                    fragment = ChatFragment.newInstance(mUserId, mUserLocation);
                     mMainPresenter.navigationItemSelected(fragment);
                     break;
                 case R.id.menu_drawer_settings:

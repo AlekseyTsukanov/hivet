@@ -69,7 +69,7 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
         mUsers = new Users();
         mMessages = new Messages();
         if (mPreferenceManager.getLoggedInUserId() != 0) {
-            MainActivity.startActivity(this, mPreferenceManager.getLoggedInUserId());
+            MainActivity.startActivity(this, mPreferenceManager.getLoggedInUserId(), "");
         }
     }
 
@@ -142,9 +142,10 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
     @Override
     public void onOpenMainActivity(@ActivityContext Context context) {
         Location currentLocation = GpsUtils.getLastKnownLocation(context);
+        String loc = currentLocation.getLatitude() + " " + currentLocation.getLongitude();
         LogUtils.error(LOG_TAG, currentLocation.getLatitude() + " " + currentLocation.getLongitude());
         mPreferenceManager.saveLoggedInUserId(mUsers.getId());
-        MainActivity.startActivity(this, mUsers.getId());
+        MainActivity.startActivity(this, mUsers.getId(), loc);
     }
 
     @Override
