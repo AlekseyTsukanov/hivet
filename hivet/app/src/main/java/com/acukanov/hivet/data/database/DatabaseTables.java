@@ -39,9 +39,15 @@ public class DatabaseTables {
             return values;
         }
 
+
         public static ContentValues updateUserAvatarByUserId(Users users) {
             ContentValues values = new ContentValues(1);
             values.put(COLUMN_USER_AVATAR, users.userAvatar);
+            return values;
+        }
+        public static ContentValues updateUserAvatar(String userAvatar) {
+            ContentValues values = new ContentValues(1);
+            values.put(COLUMN_USER_AVATAR, userAvatar);
             return values;
         }
 

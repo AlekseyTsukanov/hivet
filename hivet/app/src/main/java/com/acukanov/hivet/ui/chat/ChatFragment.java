@@ -109,7 +109,9 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
     }
 
     @Override

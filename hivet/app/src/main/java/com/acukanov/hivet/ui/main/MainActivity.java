@@ -10,37 +10,46 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.acukanov.hivet.R;
+import com.acukanov.hivet.data.database.model.Users;
 import com.acukanov.hivet.data.preference.UserPreferenceManager;
 import com.acukanov.hivet.ui.base.BaseActivity;
 import com.acukanov.hivet.ui.chat.ChatFragment;
 import com.acukanov.hivet.ui.common.ActivityCommon;
 import com.acukanov.hivet.ui.start.StartActivity;
 import com.acukanov.hivet.utils.LogUtils;
+import com.bumptech.glide.Glide;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import butterknife.Optional;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends BaseActivity implements IMainView {
+public class MainActivity extends BaseActivity implements IMainView, View.OnClickListener {
     private static final String LOG_TAG = LogUtils.makeLogTag(MainActivity.class);
     private static final String EXTRA_USER_ID = "extra_user_id";
+    private static final int REQUEST_TAKE_PHOTO = 0;
     @Inject MainPresenter mMainPresenter;
     @InjectView(R.id.toolbar) Toolbar mToolbar;
     @InjectView(R.id.navigation_view) NavigationView mNavigationView;
     @InjectView(R.id.drawer) DrawerLayout mDrawerLayout;
-    @Optional @InjectView(R.id.profile_image) CircleImageView profileImage;
-    @Optional @InjectView(R.id.username) TextView userName;
+    /*@Optional @InjectView(R.id.profile_image) */CircleImageView profileImage;
+    /*@Optional @InjectView(R.id.username) */TextView userName;
+    private ImageButton mTakeAvatarButton;
     private View mHeaderView;
+    private long mUserId;
+    private String mTakenPhotoPath = null;
 
     public static void startActivity(Activity activity, long userId) {
         Intent intent = new Intent(activity, MainActivity.class);
         intent.putExtra(EXTRA_USER_ID, userId);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         activity.startActivity(intent);
     }
 
@@ -57,15 +66,18 @@ public class MainActivity extends BaseActivity implements IMainView {
 
         mHeaderView = LayoutInflater.from(this).inflate(R.layout.partial_drawer_header, null);
         mNavigationView.addHeaderView(mHeaderView);
+        mTakeAvatarButton = (ImageButton) mHeaderView.findViewById(R.id.btn_take_avatar);
+        mTakeAvatarButton.setOnClickListener(this);
+        profileImage = (CircleImageView) mHeaderView.findViewById(R.id.profile_image);
+        userName = (TextView) mHeaderView.findViewById(R.id.username);
 
         Intent intent = getIntent();
-        long userId = 0;
         if (intent != null) {
-            userId = intent.getLongExtra(EXTRA_USER_ID, 1);
+            mUserId = intent.getLongExtra(EXTRA_USER_ID, 1);
         }
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, ChatFragment.newInstance(userId)).commit();
+        mMainPresenter.setUpUserData(mUserId);
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, ChatFragment.newInstance(mUserId)).commit();
 
-        long finalUserId = userId;
         mNavigationView.setNavigationItemSelectedListener((menuItem) -> {
             if (menuItem.isChecked()) {
                 menuItem.setChecked(false);
@@ -76,7 +88,7 @@ public class MainActivity extends BaseActivity implements IMainView {
             Fragment fragment = null;
             switch (menuItem.getItemId()){
                 case R.id.menu_drawer_chat:
-                    fragment = ChatFragment.newInstance(finalUserId);
+                    fragment = ChatFragment.newInstance(mUserId);
                     mMainPresenter.navigationItemSelected(fragment);
                     break;
                 case R.id.menu_drawer_settings:
@@ -115,6 +127,26 @@ public class MainActivity extends BaseActivity implements IMainView {
         mMainPresenter.detachView();
     }
 
+    @Override
+    @Optional @OnClick({R.id.btn_take_avatar})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_take_avatar:
+                mTakenPhotoPath = mMainPresenter.takePhoto(this, REQUEST_TAKE_PHOTO);
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_TAKE_PHOTO:
+                mMainPresenter.saveUserAvatar(mUserId, mTakenPhotoPath);
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 
     /* MVP - View methods */
 
@@ -130,5 +162,22 @@ public class MainActivity extends BaseActivity implements IMainView {
         UserPreferenceManager preferenceManager = new UserPreferenceManager(this);
         preferenceManager.clearUserData();
         StartActivity.startActivity(this);
+    }
+
+    @Override
+    public void onSaveAvatar() {
+        mMainPresenter.setUpUserData(mUserId);
+    }
+
+    @Override
+    public void onSetUpUserData(Users user) {
+        if (user != null) {
+            if (user.userAvatar != null) {
+                Glide.with(this)
+                        .load(user.userAvatar)
+                        .into(profileImage);
+            }
+            userName.setText(user.userName);
+        }
     }
 }

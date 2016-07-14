@@ -84,7 +84,7 @@ public class ChatPresenter implements IPresenter<IChatView> {
     }
 
     public void createMessage(Messages message) {
-        mSubscription = mDatabaseHelper.createNewMessage(message)
+        mSubscription = mDatabaseHelper.createMessage(message)
                 .subscribeOn(Schedulers.io())
                 .subscribe(id -> {
                     LogUtils.error(LOG_TAG, "onNex in service message creation");

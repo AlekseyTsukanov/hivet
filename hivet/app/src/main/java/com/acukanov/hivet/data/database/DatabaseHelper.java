@@ -9,8 +9,6 @@ import com.acukanov.hivet.utils.LogUtils;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
 
-import java.util.ArrayList;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -60,76 +58,12 @@ public class DatabaseHelper {
         });
     }
 
-    public ArrayList<Users> findUsersData() {
-        ArrayList<Users> users = new ArrayList<>();
-        String query = "SELECT * FROM " + DatabaseTables.TABLE_USERS
-                + " INNER JOIN " + DatabaseTables.TABLE_MESSAGES
-                + " ON " + DatabaseTables.UsersTable.COLUMN_ID
-                +  " = " + DatabaseTables.MessagesTable.COLUMN_USER_ID;
-        Cursor cursor = mDb.query(query);
-        while (cursor.moveToNext()) {
-            users.add(DatabaseTables.UsersTable.parseCursor(cursor));
-        }
-        return users;
-    }
-
-    /*public Observable<ArrayList<Users>> findUsersDataTest() {
-        return Observable.create(subscriber -> {
-            ArrayList<Users> user_id = new ArrayList<Users>();
-            // String query = "SELECT * FROM user_id INNER JOIN messages ON user_id.id = messages.user_id;
-            String query = "SELECT * FROM " + DatabaseTables.TABLE_USERS
-                    + " INNER JOIN " + DatabaseTables.TABLE_MESSAGES
-                    + " ON " + DatabaseTables.UsersTable.COLUMN_ID
-                    +  " = " + DatabaseTables.MessagesTable.COLUMN_USER_ID;
-            Cursor cursor = mDb.query(query);
-            while (cursor.moveToNext()) {
-                LogUtils.error(LOG_TAG, DatabaseTables.UsersTable.parseCursor(cursor).toString());
-                user_id.add(DatabaseTables.UsersTable.parseCursor(cursor));
-                subscriber.onNext(user_id);
-            }
-            cursor.close();
-            subscriber.onCompleted();
-        });
-    }*/
-
-    public Observable<ArrayList<Messages>> findAllMessages() {
-        return Observable.create(subscriber -> {
-            ArrayList<Messages> messages = new ArrayList<Messages>();
-            /*String query = "SELECT m.message, u.user_name"
-                    + " FROM messages m"
-                    + " LEFT OUTER JOIN users u ON m.user_id = u." + DatabaseTables.UsersTable.COLUMN_ID;*/
-            String query = "SELECT * FROM " + DatabaseTables.TABLE_MESSAGES;
-            Cursor cursor = mDb.query(query);
-            while (cursor.moveToNext()) {
-                messages.add(DatabaseTables.MessagesTable.parseCursor(cursor));
-                subscriber.onNext(messages);
-            }
-            cursor.close();
-            subscriber.onCompleted();
-        });
-    }
-
     public Observable<Users> findUserById(long id) {
         return Observable.create(subscriber -> {
             String query = "SELECT * FROM users WHERE users._id = " + id;
             Cursor cursor = mDb.query(query);
             while (cursor.moveToNext()) {
                 subscriber.onNext(DatabaseTables.UsersTable.parseCursor(cursor));
-            }
-            cursor.close();
-            subscriber.onCompleted();
-        });
-    }
-
-    public Observable<ArrayList<Messages>> findAllMessagesTest() {
-        return Observable.create(subscriber -> {
-            ArrayList<Messages> messages = new ArrayList<Messages>();
-            String query =  "SELECT * FROM " + DatabaseTables.TABLE_MESSAGES;
-            Cursor cursor = mDb.query(query);
-            while (cursor.moveToNext()) {
-                LogUtils.error(LOG_TAG, DatabaseTables.MessagesTable.parseCursor(cursor).toString());
-                messages.add(DatabaseTables.MessagesTable.parseCursor(cursor));
-                subscriber.onNext(messages);
             }
             cursor.close();
             subscriber.onCompleted();
@@ -171,13 +105,6 @@ public class DatabaseHelper {
 
     public Observable<Long> createUser(Users users) {
         return Observable.create(subscriber -> {
-            // TODO: Test data, delete
-            /*final AtomicInteger queries = new AtomicInteger();
-            Observable<SqlBrite.Query> u = mDb.createQuery(DatabaseTables.TABLE_USERS, "SELECT * FROM " + DatabaseTables.TABLE_USERS);
-            Subscription s = u.subscribe(query -> {
-                queries.getAndIncrement();
-            });
-            LogUtils.error(LOG_TAG, "Queries = " + queries.get());*/
             BriteDatabase.Transaction transaction = mDb.newTransaction();
             try {
                 long id = mDb.insert(DatabaseTables.TABLE_USERS, DatabaseTables.UsersTable.createUser(users));
@@ -190,39 +117,7 @@ public class DatabaseHelper {
         });
     }
 
-    public Observable<Void> createMessage(Users users, Messages messages) {
-        return Observable.create(subscriber -> {
-            BriteDatabase.Transaction transaction = mDb.newTransaction();
-            try {
-                mDb.insert(DatabaseTables.TABLE_MESSAGES, DatabaseTables.MessagesTable.createMessage(users, messages));
-                transaction.markSuccessful();
-                subscriber.onCompleted();
-                LogUtils.debug(LOG_TAG, "Creates message = UserId " + users.id + "\nUserName " + users.userName
-                        + "\nMessageId " + messages.id + "\nText message " + messages.message
-                        + "\nDate sent" + messages.dateTime + "\nMessage userId " + messages.userId);
-            } finally {
-                transaction.end();
-            }
-        });
-    }
-
-    public Observable<Messages> createMessage(Messages messages) {
-        return Observable.create(subscriber -> {
-            BriteDatabase.Transaction transaction = mDb.newTransaction();
-            try {
-                mDb.insert(DatabaseTables.TABLE_MESSAGES, DatabaseTables.MessagesTable.createMessage(messages));
-                transaction.markSuccessful();
-                subscriber.onCompleted();
-                LogUtils.debug(LOG_TAG, "Creates message = "
-                        + "\nMessageId " + messages.id + "\nText message " + messages.message
-                        + "\nDate sent" + messages.dateTime + "\nMessage userId " + messages.userId);
-            } finally {
-                transaction.end();
-            }
-        });
-    }
-
-    public Observable<Long> createNewMessage(Messages message) {
+    public Observable<Long> createMessage(Messages message) {
         return Observable.create(subscriber -> {
             BriteDatabase.Transaction transaction = mDb.newTransaction();
             try {
@@ -253,19 +148,18 @@ public class DatabaseHelper {
         });
     }
 
-    public Observable<Void> updateUserAvatar(Users users) {
+    public Observable<Void> updateUserAvatarByUserId(long userId, String userAvatar) {
         return Observable.create(subscriber -> {
             BriteDatabase.Transaction transaction = mDb.newTransaction();
             try {
                 mDb.update(
                         DatabaseTables.TABLE_USERS,
-                        DatabaseTables.UsersTable.updateUserAvatarByUserId(users),
-                        DatabaseTables.UsersTable.COLUMN_ID + "=?"
+                        DatabaseTables.UsersTable.updateUserAvatar(userAvatar),
+                        DatabaseTables.UsersTable.COLUMN_ID + "=?",
+                        String.valueOf(userId)
                 );
                 transaction.markSuccessful();
                 subscriber.onCompleted();
-                LogUtils.debug(LOG_TAG, "Creates message = " + users.id + "\n" + users.userName
-                        + "\n" + users.userAvatar);
             } finally {
                 transaction.end();
             }

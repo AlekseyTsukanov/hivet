@@ -98,7 +98,7 @@ public class BotMessageService extends Service {
                 mMessages.dateTime = DateUtils.getDateTime();
                 mMessages.userId = 1;
                 String textMessage = mMessages.message;
-                mSubscription = mDatabaseHelper.createNewMessage(mMessages)
+                mSubscription = mDatabaseHelper.createMessage(mMessages)
                         .subscribeOn(Schedulers.io())
                         .subscribe(id -> {
                             LogUtils.error(LOG_TAG, "onNex in service message creation");
