@@ -157,7 +157,7 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
         mMessageList.addAll(messagesList);
         mAdapter.setMessages(mMessageList);
         mAdapter.notifyDataSetChanged();
-        mChatList.smoothScrollToPosition(mMessageList.size());
+        mChatList.scrollToPosition(mMessageList.size() - 1);
         mEmptyChatMessage.setVisibility(View.GONE);
     }
 

@@ -14,6 +14,7 @@ import com.acukanov.hivet.data.database.DatabaseOpenHelper;
 import com.acukanov.hivet.data.database.model.Messages;
 import com.acukanov.hivet.data.database.model.Users;
 import com.acukanov.hivet.utils.LogUtils;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -80,6 +81,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 viewHolder.userName.setText(user.userName);
                 viewHolder.message.setText(message.message);
                 viewHolder.dateTime.setText(message.dateTime);
+                if (user.userAvatar != null && !user.userAvatar.equals("")) {
+                    Glide.with(mActivity)
+                            .load(user.userAvatar)
+                            .into(viewHolder.userAvatar);
+                }
             }
         } else if (holder instanceof RightMessageHolder) {
             RightMessageHolder viewHolder = (RightMessageHolder) holder;
@@ -87,6 +93,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 viewHolder.userName.setText(user.userName);
                 viewHolder.message.setText(message.message);
                 viewHolder.dateTime.setText(message.dateTime);
+                if (user.userAvatar != null && !user.userAvatar.equals("")) {
+                    Glide.with(mActivity)
+                            .load(user.userAvatar)
+                            .into(viewHolder.userAvatar);
+                }
             }
         }
     }
