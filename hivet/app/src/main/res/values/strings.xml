@@ -12,6 +12,7 @@
 
     <string name="text_hint_user_name">@string/text_user_name</string>
     <string name="text_hint_enter_message">Enter your message here</string>
+    <string name="text_hint_frequency">10</string>
 
     <string name="text_enable_gps">Please, enable GPS to start searching your location</string>
     <string name="text_empty_user_name">Please, enter user name (not less than 4 characters)</string>
@@ -19,6 +20,9 @@
     <string name="text_no_ethernet_connection">No ethernet connection</string>
     <string name="text_empty_chat">There is no any messages yet.\n Write something to start chat with Bot.</string>
     <string name="text_user_name">User Name</string>
+    <string name="text_settings_messaging_frequency">Frequency of messaging</string>
+    <string name="text_settings_notifications">Notifications</string>
+    <string name="text_settings_sound">Sound accompaniment</string>
 
     <string name="text_lorem_ipsum">Lorem ipsum dolor sit amet,
         consectetur adipiscing elit, sed do eiusmod tempor incididunt ut

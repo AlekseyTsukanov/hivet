@@ -44,7 +44,7 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
     private ArrayList<Messages> mMessageList;
     private Messages mMessage;
     private long mUserId;
-    @Inject ChatPresenter mPresenter;
+    @Inject ChatPresenter mChatPresenter;
     @InjectView(R.id.list_chat) RecyclerView mChatList;
     @InjectView(R.id.text_empty_chat) TextView mEmptyChatMessage;
     @InjectView(R.id.text_message_field) EditText mMessageField;
@@ -96,12 +96,12 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
         ButterKnife.inject(this, rootView);
-        mPresenter.attachView(this);
+        mChatPresenter.attachView(this);
 
         mChatList.setHasFixedSize(true);
         mChatList.setLayoutManager(mLayoutManager);
         mChatList.setAdapter(mAdapter);
-        mPresenter.loadMessages();
+        mChatPresenter.loadMessages();
 
         return rootView;
     }
@@ -124,7 +124,7 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
         super.onDestroy();
         EventBus.getDefault().postSticky(new StopMessageService());
         EventBus.getDefault().unregister(this);
-        mPresenter.detachView();
+        mChatPresenter.detachView();
     }
 
     @Override
@@ -137,7 +137,7 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
                     mMessage.dateTime = DateUtils.getDateTime();
                     mMessage.userId = mUserId;
                     mMessageField.setText("");
-                    mPresenter.createMessage(mMessage);
+                    mChatPresenter.createMessage(mMessage);
                 }
                 break;
         }
@@ -145,7 +145,7 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(ChatMessageSent event) {
-        mPresenter.addMessage(event.getId());
+        mChatPresenter.addMessage(event.getId());
     }
 
     @Override
