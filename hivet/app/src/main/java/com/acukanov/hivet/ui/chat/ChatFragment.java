@@ -100,11 +100,9 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
         mChatList.setLayoutManager(mLayoutManager);
         mChatList.setAdapter(mAdapter);
 
-        mMessage.message = mUserLocation;
-        mMessage.dateTime = DateUtils.getDateTime();
-        mMessage.userId = mUserId;
-        mMessageField.setText("");
-        mChatPresenter.createMessage(mMessage);
+        if (!mUserLocation.equals("")) {
+            mChatPresenter.sendLocationMassage(mUserId, mUserLocation);
+        }
 
         mChatPresenter.loadMessages();
 

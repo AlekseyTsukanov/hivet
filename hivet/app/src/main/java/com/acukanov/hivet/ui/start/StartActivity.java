@@ -141,7 +141,7 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
 
     @Override
     public void onOpenMainActivity(@ActivityContext Context context) {
-        Location currentLocation = GpsUtils.getLastKnownLocation(context);
+        Location currentLocation = GpsUtils.getLastKnownLocationIntenetProvider(context);
         String loc = currentLocation.getLatitude() + " " + currentLocation.getLongitude();
         LogUtils.error(LOG_TAG, currentLocation.getLatitude() + " " + currentLocation.getLongitude());
         mPreferenceManager.saveLoggedInUserId(mUsers.getId());

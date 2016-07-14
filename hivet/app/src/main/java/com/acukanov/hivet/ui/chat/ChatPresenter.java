@@ -5,6 +5,7 @@ import com.acukanov.hivet.data.database.DatabaseHelper;
 import com.acukanov.hivet.data.database.model.Messages;
 import com.acukanov.hivet.events.ChatMessageSent;
 import com.acukanov.hivet.ui.base.IPresenter;
+import com.acukanov.hivet.utils.DateUtils;
 import com.acukanov.hivet.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -84,6 +85,23 @@ public class ChatPresenter implements IPresenter<IChatView> {
     }
 
     public void createMessage(Messages message) {
+        mSubscription = mDatabaseHelper.createMessage(message)
+                .subscribeOn(Schedulers.io())
+                .subscribe(id -> {
+                    LogUtils.error(LOG_TAG, "onNex in service message creation");
+                    EventBus.getDefault().post(new ChatMessageSent(id));
+                }, (e) -> {
+                    LogUtils.error(LOG_TAG, "onError on service message creation: " + e.getMessage());
+                }, () -> {
+                    LogUtils.error(LOG_TAG, "onComplete on service message creation");
+                });
+    }
+
+    public void sendLocationMassage(long userId, String location) {
+        Messages message = new Messages();
+        message.message = location;
+        message.dateTime = DateUtils.getDateTime();
+        message.userId = userId;
         mSubscription = mDatabaseHelper.createMessage(message)
                 .subscribeOn(Schedulers.io())
                 .subscribe(id -> {

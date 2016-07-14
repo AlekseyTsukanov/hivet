@@ -12,9 +12,15 @@ public class GpsUtils {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
-    public static Location getLastKnownLocation(Context context) {
+    public static Location getLastKnownLocationGpsProvider(Context context) {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         Location myLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        return myLocation;
+    }
+
+    public static Location getLastKnownLocationIntenetProvider(Context context) {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        Location myLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         return myLocation;
     }
 }
