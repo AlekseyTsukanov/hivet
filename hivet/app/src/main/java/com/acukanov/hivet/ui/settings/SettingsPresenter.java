@@ -46,6 +46,17 @@ public class SettingsPresenter implements IPresenter<ISettingsView> {
         mPreferenceManager.saveFrequencyValue(frequency);
         mPreferenceManager.saveNotificationsValue(notifications);
         mPreferenceManager.saveSoundValue(sound);
-        mSettingsView.onSettingsSaved();
-    };
+    }
+
+    public void saveNotificationsSettings(boolean notifications) {
+        mPreferenceManager.saveNotificationsValue(notifications);
+    }
+
+    public void saveSoundSettings(boolean sound) {
+        mPreferenceManager.saveSoundValue(sound);
+    }
+
+    public void saveFrequencySettings(int frequency) {
+        mPreferenceManager.saveFrequencyValue(frequency);
+    }
 }

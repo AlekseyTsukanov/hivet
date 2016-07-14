@@ -78,7 +78,8 @@ public class BotMessageService extends Service {
                                         getApplicationContext(),
                                         MESSAGE_SERVICE_ID,
                                         "Bot",
-                                        textMessage);
+                                        textMessage,
+                                        mPreferences.getSoundValue());
                             }
                         }, (e) -> {
                             LogUtils.error(LOG_TAG, "onError on service message creation: " + e.getMessage());

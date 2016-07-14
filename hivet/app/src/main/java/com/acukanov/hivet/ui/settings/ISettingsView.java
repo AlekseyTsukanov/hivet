@@ -7,5 +7,4 @@ public interface ISettingsView extends IView {
     void onFrequencyInit(int frequency);
     void onNotificationsInit(boolean flag);
     void onSoundSwitchInit(boolean flag);
-    void onSettingsSaved();
 }

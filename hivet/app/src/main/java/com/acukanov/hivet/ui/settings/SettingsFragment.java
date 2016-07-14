@@ -4,13 +4,13 @@ package com.acukanov.hivet.ui.settings;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import com.acukanov.hivet.R;
 import com.acukanov.hivet.data.preference.SettingsPreferenceManager;
@@ -22,16 +22,14 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 
-public class SettingsFragment extends BaseFragment implements ISettingsView, View.OnClickListener {
+public class SettingsFragment extends BaseFragment implements ISettingsView, TextWatcher {
     private static final String LOG_TAG = LogUtils.makeLogTag(SettingsFragment.class);
     private Activity mActivity;
     @Inject SettingsPresenter mSettingsPresenter;
     @InjectView(R.id.text_settings_frequency) EditText mMessagesFrequencyText;
     @InjectView(R.id.switch_notifications) Switch mNotificationsSwitch;
     @InjectView(R.id.switch_sound) Switch mSoundSwitch;
-    @InjectView(R.id.btn_save) Button mSaveButton;
     private SettingsPreferenceManager mPreferenceManager;
     private boolean notificationFlag = true;
     private boolean soundFlag = false;
@@ -64,13 +62,15 @@ public class SettingsFragment extends BaseFragment implements ISettingsView, Vie
         ButterKnife.inject(this, rootView);
         mSettingsPresenter.attachView(this);
         mSettingsPresenter.initValues();
-        mSaveButton.setOnClickListener(this);
         mNotificationsSwitch.setOnCheckedChangeListener((compoundBtn, isChecked) -> {
             notificationFlag = isChecked;
+            mSettingsPresenter.saveNotificationsSettings(notificationFlag);
         });
         mSoundSwitch.setOnCheckedChangeListener((compoundBtn, isChecked) -> {
             soundFlag = isChecked;
+            mSettingsPresenter.saveSoundSettings(soundFlag);
         });
+        mMessagesFrequencyText.addTextChangedListener(this);
         return rootView;
     }
 
@@ -90,17 +90,21 @@ public class SettingsFragment extends BaseFragment implements ISettingsView, Vie
         mSettingsPresenter.detachView();
     }
 
+    // TODO: Change realisation to RxBind
     @Override
-    @OnClick({R.id.btn_save})
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_save:
-                mSettingsPresenter.saveSettings(
-                        Integer.parseInt(mMessagesFrequencyText.getText().toString()),
-                        notificationFlag,
-                        soundFlag
-                );
-                break;
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+        if (!editable.toString().equals("")) {
+            mSettingsPresenter.saveFrequencySettings(Integer.parseInt(editable.toString()));
         }
     }
 
@@ -117,10 +121,5 @@ public class SettingsFragment extends BaseFragment implements ISettingsView, Vie
     @Override
     public void onSoundSwitchInit(boolean flag) {
         mSoundSwitch.setChecked(flag);
-    }
-
-    @Override
-    public void onSettingsSaved() {
-        Toast.makeText(mActivity, "Settings are saved", Toast.LENGTH_SHORT).show();
     }
 }
