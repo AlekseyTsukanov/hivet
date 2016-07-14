@@ -16,7 +16,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.acukanov.hivet.R;
 import com.acukanov.hivet.data.database.model.Messages;
@@ -70,7 +69,6 @@ public class StartActivity extends BaseActivity implements IStartView, View.OnCl
         mUsers = new Users();
         mMessages = new Messages();
         if (mPreferenceManager.getLoggedInUserId() != 0) {
-            Toast.makeText(this, mPreferenceManager.getLoggedInUserId() + "", Toast.LENGTH_SHORT).show();
             MainActivity.startActivity(this, mPreferenceManager.getLoggedInUserId());
         }
     }

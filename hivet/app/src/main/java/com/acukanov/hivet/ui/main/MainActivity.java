@@ -16,12 +16,16 @@ import android.widget.TextView;
 import com.acukanov.hivet.R;
 import com.acukanov.hivet.data.database.model.Users;
 import com.acukanov.hivet.data.preference.UserPreferenceManager;
+import com.acukanov.hivet.events.StopMessageService;
 import com.acukanov.hivet.ui.base.BaseActivity;
 import com.acukanov.hivet.ui.chat.ChatFragment;
 import com.acukanov.hivet.ui.common.ActivityCommon;
+import com.acukanov.hivet.ui.settings.SettingsFragment;
 import com.acukanov.hivet.ui.start.StartActivity;
 import com.acukanov.hivet.utils.LogUtils;
 import com.bumptech.glide.Glide;
+
+import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
 
@@ -39,8 +43,8 @@ public class MainActivity extends BaseActivity implements IMainView, View.OnClic
     @InjectView(R.id.toolbar) Toolbar mToolbar;
     @InjectView(R.id.navigation_view) NavigationView mNavigationView;
     @InjectView(R.id.drawer) DrawerLayout mDrawerLayout;
-    /*@Optional @InjectView(R.id.profile_image) */CircleImageView profileImage;
-    /*@Optional @InjectView(R.id.username) */TextView userName;
+    private CircleImageView mProfileImage;
+    private TextView mUserName;
     private ImageButton mTakeAvatarButton;
     private View mHeaderView;
     private long mUserId;
@@ -68,8 +72,8 @@ public class MainActivity extends BaseActivity implements IMainView, View.OnClic
         mNavigationView.addHeaderView(mHeaderView);
         mTakeAvatarButton = (ImageButton) mHeaderView.findViewById(R.id.btn_take_avatar);
         mTakeAvatarButton.setOnClickListener(this);
-        profileImage = (CircleImageView) mHeaderView.findViewById(R.id.profile_image);
-        userName = (TextView) mHeaderView.findViewById(R.id.username);
+        mProfileImage = (CircleImageView) mHeaderView.findViewById(R.id.profile_image);
+        mUserName = (TextView) mHeaderView.findViewById(R.id.username);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -92,6 +96,7 @@ public class MainActivity extends BaseActivity implements IMainView, View.OnClic
                     mMainPresenter.navigationItemSelected(fragment);
                     break;
                 case R.id.menu_drawer_settings:
+                    fragment = SettingsFragment.newInstance();
                     mMainPresenter.navigationItemSelected(fragment);
                     break;
                 case R.id.menu_drawer_logout:
@@ -124,6 +129,7 @@ public class MainActivity extends BaseActivity implements IMainView, View.OnClic
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().postSticky(new StopMessageService());
         mMainPresenter.detachView();
     }
 
@@ -175,9 +181,9 @@ public class MainActivity extends BaseActivity implements IMainView, View.OnClic
             if (user.userAvatar != null) {
                 Glide.with(this)
                         .load(user.userAvatar)
-                        .into(profileImage);
+                        .into(mProfileImage);
             }
-            userName.setText(user.userName);
+            mUserName.setText(user.userName);
         }
     }
 }

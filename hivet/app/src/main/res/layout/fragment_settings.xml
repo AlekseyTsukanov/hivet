@@ -16,7 +16,7 @@
         />
 
     <EditText
-        android:layout_width="wrap_content"
+        android:layout_width="45dp"
         android:layout_height="wrap_content"
         android:id="@+id/text_settings_frequency"
         android:inputType="numberSigned"
@@ -66,5 +66,16 @@
         android:layout_below="@+id/text_settings_sound_title"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_save"
+        android:background="@android:color/transparent"
+        android:text="@string/btn_save"
+        android:layout_below="@+id/switch_sound"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
         />
 </RelativeLayout>

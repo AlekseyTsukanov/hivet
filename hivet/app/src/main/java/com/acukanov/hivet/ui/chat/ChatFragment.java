@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.acukanov.hivet.R;
 import com.acukanov.hivet.data.database.model.Messages;
 import com.acukanov.hivet.events.ChatMessageSent;
-import com.acukanov.hivet.events.StopMessageService;
 import com.acukanov.hivet.service.BotMessageService;
 import com.acukanov.hivet.ui.base.BaseActivity;
 import com.acukanov.hivet.ui.base.BaseFragment;
@@ -82,11 +81,6 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
             mUserId = args.getLong(EXTRA_USER_ID);
         }
         mMessage = new Messages();
-        Intent botMessageService = BotMessageService.getStartIntent(mActivity);
-        if (BotMessageService.isServiceRunning(mActivity, BotMessageService.class)) {
-            mActivity.stopService(BotMessageService.getStartIntent(mActivity));
-        }
-        mActivity.startService(botMessageService);
         mAdapter = new ChatAdapter(mActivity, mUserId);
         mLayoutManager = new LinearLayoutManager(mActivity);
     }
@@ -107,6 +101,16 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        Intent botMessageService = BotMessageService.getStartIntent(mActivity);
+        if (BotMessageService.isServiceRunning(mActivity, BotMessageService.class)) {
+            mActivity.stopService(BotMessageService.getStartIntent(mActivity));
+        }
+        mActivity.startService(botMessageService);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         if (!EventBus.getDefault().isRegistered(this)) {
@@ -122,7 +126,6 @@ public class ChatFragment extends BaseFragment implements IChatView, View.OnClic
     @Override
     public void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().postSticky(new StopMessageService());
         EventBus.getDefault().unregister(this);
         mChatPresenter.detachView();
     }
